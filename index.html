@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Resources — General Contracting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Archivo+Expanded:wght@700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14181B;
+    --bg-alt:#1A1F22;
+    --surface:#1F2427;
+    --surface-2:#242A2D;
+    --border:#2B3134;
+    --text:#ECE8DF;
+    --text-muted:#98A0A3;
+    --rust:#C1552A;
+    --rust-hover:#A8481F;
+    --steel:#7FA3B2;
+    --steel-dim:#3E4F58;
+    --max-w:1140px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Source Sans 3', sans-serif;
+    font-size:17px;
+    line-height:1.6;
+  }
+  h1,h2,h3{
+    font-family:'Archivo', sans-serif;
+    font-weight:900;
+    letter-spacing:-0.01em;
+    line-height:1.07;
+  }
+  a{color:inherit;}
+  .wrap{max-width:var(--max-w); margin:0 auto; padding:0 32px;}
+  ::selection{background:var(--rust); color:#fff;}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation:none !important; transition:none !important;}
+  }
+
+  /* ---------- REVEAL ANIMATION ---------- */
+  [data-reveal]{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1);
+  }
+  [data-reveal].in-view{opacity:1; transform:translateY(0);}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(20,24,27,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; max-width:var(--max-w); margin:0 auto;
+  }
+  .logo{font-family:'Archivo Expanded', sans-serif; font-weight:700; font-size:19px; letter-spacing:.01em;}
+  .logo span{color:var(--rust);}
+  nav ul{display:flex; gap:8px; list-style:none;}
+  nav a{
+    text-decoration:none; font-weight:600; font-size:15px; color:var(--text-muted);
+    padding:8px 14px; border-radius:2px; position:relative;
+    transition:color .2s ease;
+  }
+  nav a::after{
+    content:''; position:absolute; left:14px; right:14px; bottom:3px; height:2px;
+    background:var(--rust); transform:scaleX(0); transform-origin:left;
+    transition:transform .25s ease;
+  }
+  nav a:hover{color:var(--text);}
+  nav a:hover::after{transform:scaleX(1);}
+  nav a.active{color:var(--text);}
+  nav a.active::after{transform:scaleX(1);}
+  .nav-toggle{display:none; background:none; border:none; cursor:pointer;}
+  .nav-toggle span{display:block; width:22px; height:2px; background:var(--text); margin:5px 0; transition:transform .2s ease;}
+
+  /* ---------- PAGE / ROUTER ---------- */
+  .page{display:none;}
+  .page.active{display:block; animation:pageIn .55s cubic-bezier(.2,.7,.2,1) both;}
+  @keyframes pageIn{
+    from{opacity:0; transform:translateY(14px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .section{padding:88px 0;}
+  .section-head{
+    display:grid; grid-template-columns:1fr 1.4fr; gap:32px;
+    margin-bottom:52px; border-bottom:1px solid var(--border); padding-bottom:28px;
+  }
+  .section-head h2{font-size:clamp(28px,3.4vw,40px);}
+  .section-head p{color:var(--text-muted); max-width:52ch; align-self:end;}
+  .eyebrow{display:none;} /* intentionally unused — no tracked-out label chrome */
+
+  .btn{
+    display:inline-block; padding:14px 26px; font-weight:600; font-size:15px;
+    text-decoration:none; border:1px solid currentColor; cursor:pointer;
+    font-family:inherit; background:none; color:var(--text);
+    transition:background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-solid{background:var(--rust); color:#fff; border-color:var(--rust);}
+  .btn-solid:hover{background:var(--rust-hover); border-color:var(--rust-hover);}
+  .btn-outline{color:var(--text); border-color:var(--border);}
+  .btn-outline:hover{border-color:var(--text); background:rgba(255,255,255,.04);}
+  .btn-small{padding:9px 16px; font-size:13px;}
+
+  /* ---------- HOME / HERO ---------- */
+  .hero-page{position:relative; overflow:hidden;}
+  .hero-bg{
+    position:absolute; inset:-4%; z-index:0;
+    background-color:var(--bg);
+    background-image:
+      linear-gradient(180deg, rgba(20,24,27,.6), rgba(20,24,27,.96)),
+      repeating-linear-gradient(45deg, rgba(127,163,178,0.05) 0px, rgba(127,163,178,0.05) 1px, transparent 1px, transparent 28px);
+    background-size:cover; background-position:center;
+    transform:scale(1);
+    animation:kenburns 24s ease-in-out infinite alternate;
+  }
+  @keyframes kenburns{ from{transform:scale(1);} to{transform:scale(1.07);} }
+
+  .hero-inner{
+    position:relative; z-index:1;
+    max-width:var(--max-w); margin:0 auto;
+    padding:110px 32px 90px;
+  }
+  .hero-inner h1{font-size:clamp(38px, 5.6vw, 66px); max-width:16ch;}
+  .hero-inner .tagline{margin-top:22px; max-width:50ch; color:#D4D8D6; font-size:18px;}
+  .meta-line{margin-top:26px; display:flex; gap:22px; flex-wrap:wrap; font-size:14px; color:var(--steel); font-weight:600;}
+  .meta-line span{position:relative; padding-left:14px;}
+  .meta-line span::before{content:''; position:absolute; left:0; top:7px; width:6px; height:6px; background:var(--rust);}
+  .cta-row{margin-top:36px; display:flex; gap:16px; flex-wrap:wrap;}
+
+  .home-panels{background:var(--bg-alt); border-top:1px solid var(--border);}
+  .panel-grid{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--border); border-left:1px solid var(--border);
+  }
+  .panel{border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:34px 28px;
+    transition:background .25s ease;}
+  .panel:hover{background:var(--surface);}
+  .panel svg{width:32px; height:32px; margin-bottom:16px;}
+  .panel h3{font-size:18px; margin-bottom:8px;}
+  .panel p{color:var(--text-muted); font-size:15px;}
+
+  .home-cta{
+    padding:80px 32px; text-align:left; max-width:var(--max-w); margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
+  }
+  .home-cta h2{font-size:clamp(24px,3vw,34px); max-width:20ch;}
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--border); border-left:1px solid var(--border);
+  }
+  .service{
+    border-right:1px solid var(--border); border-bottom:1px solid var(--border);
+    padding:32px 28px; background:var(--bg); transition:background .25s ease, transform .25s ease;
+  }
+  .service:hover{background:var(--surface); transform:translateY(-2px);}
+  .service svg{width:34px; height:34px; margin-bottom:18px;}
+  .service h3{font-size:19px; margin-bottom:10px;}
+  .service p{color:var(--text-muted); font-size:15px;}
+
+  /* ---------- PROJECTS ---------- */
+  .project-row{
+    display:grid; grid-template-columns:56px 1fr auto auto; gap:24px; align-items:center;
+    padding:22px 6px; border-bottom:1px solid var(--border);
+    transition:background .2s ease, padding-left .2s ease;
+  }
+  .project-row:first-of-type{border-top:1px solid var(--border);}
+  .project-row:hover{background:var(--surface); padding-left:16px;}
+  .project-row svg{width:38px; height:38px;}
+  .project-row .p-name{font-family:'Archivo', sans-serif; font-weight:700; font-size:19px;}
+  .project-row .p-type{color:var(--text-muted); font-size:14px; margin-top:4px;}
+  .project-row .p-loc, .project-row .p-year{font-size:14px; color:var(--text-muted); text-align:right; white-space:nowrap;}
+  .project-note{margin-top:28px; font-size:14px; color:var(--text-muted); border-left:3px solid var(--rust); padding-left:14px;}
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:start;}
+  .about-figures{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border);}
+  .figure{background:var(--bg); padding:26px 20px; transition:background .25s ease;}
+  .figure:hover{background:var(--surface);}
+  .figure .num{font-family:'Archivo', sans-serif; font-weight:900; font-size:32px; color:var(--rust);}
+  .figure .label{font-size:13px; color:var(--text-muted); margin-top:6px;}
+  .about-copy p{margin-bottom:16px; max-width:60ch; color:var(--text);}
+  .about-copy p:first-child{font-size:19px; font-weight:500;}
+
+  /* ---------- CONTACT ---------- */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px;}
+  .contact-info dl{display:grid; grid-template-columns:auto 1fr; gap:10px 18px; font-size:15px;}
+  .contact-info dt{color:var(--steel); font-weight:600;}
+  .contact-info dd{color:var(--text);}
+  .service-area{margin-top:32px; padding-top:24px; border-top:1px solid var(--border); font-size:14px; color:var(--text-muted);}
+
+  form{display:flex; flex-direction:column; gap:16px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-size:13px; font-weight:600; color:var(--text-muted);}
+  .field input, .field select, .field textarea{
+    background:var(--surface); border:1px solid var(--border);
+    padding:11px 12px; color:var(--text); font-family:inherit; font-size:15px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--rust);}
+  .field textarea{resize:vertical; min-height:90px;}
+  form .btn{align-self:flex-start; margin-top:8px;}
+  .form-msg{font-size:14px; color:var(--steel); min-height:20px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--bg-alt); border-top:1px solid var(--border); padding:28px 0;}
+  .footer-inner{
+    max-width:var(--max-w); margin:0 auto; padding:0 32px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    font-size:13px; color:var(--text-muted);
+  }
+  .hidden-admin{
+    color:var(--text-muted); text-decoration:none; opacity:.4; padding:6px 10px;
+    font-size:13px; transition:opacity .2s ease;
+  }
+  .hidden-admin:hover{opacity:1;}
+
+  /* ---------- ADMIN ---------- */
+  .admin-page{background:var(--bg); min-height:70vh;}
+  .admin-login{
+    max-width:360px; margin:120px auto; padding:40px 32px; background:var(--surface);
+    border:1px solid var(--border); text-align:left;
+  }
+  .admin-login h2{font-size:22px; margin-bottom:8px;}
+  .admin-login p{color:var(--text-muted); font-size:14px; margin-bottom:20px;}
+  .admin-shell{max-width:var(--max-w); margin:0 auto; padding:56px 32px 100px;}
+  .admin-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:36px; flex-wrap:wrap; gap:16px;}
+  .admin-head h2{font-size:28px;}
+  .admin-tabs{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:36px; border-bottom:1px solid var(--border);}
+  .admin-tab{
+    padding:12px 18px; font-size:14px; font-weight:600; color:var(--text-muted);
+    background:none; border:none; cursor:pointer; border-bottom:2px solid transparent; font-family:inherit;
+  }
+  .admin-tab.active{color:var(--text); border-bottom-color:var(--rust);}
+  .admin-panel{display:none;}
+  .admin-panel.active{display:block; animation:pageIn .4s ease both;}
+  .admin-card{background:var(--surface); border:1px solid var(--border); padding:28px; margin-bottom:20px;}
+  .admin-card h3{font-size:17px; margin-bottom:6px;}
+  .admin-card .hint{font-size:13px; color:var(--text-muted); margin-bottom:18px;}
+  .admin-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .bg-preview{
+    margin-top:12px; height:140px; border:1px solid var(--border);
+    background-size:cover; background-position:center; background-color:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;
+  }
+  .admin-save-msg{font-size:13px; color:#7FBE8C; min-height:18px; margin-top:10px;}
+  .admin-warning{
+    font-size:13px; color:var(--text-muted); background:var(--bg-alt); border:1px solid var(--border);
+    padding:14px 16px; margin-bottom:28px; border-left:3px solid var(--rust);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:860px){
+    .panel-grid, .services-grid{grid-template-columns:1fr 1fr;}
+    .about-grid, .contact-grid, .admin-grid-2{grid-template-columns:1fr;}
+    .section-head{grid-template-columns:1fr;}
+    .project-row{grid-template-columns:40px 1fr; row-gap:4px;}
+    .project-row .p-loc, .project-row .p-year{grid-column:2; text-align:left;}
+  }
+  @media (max-width:620px){
+    nav ul{
+      position:absolute; top:100%; left:0; right:0; background:var(--bg);
+      flex-direction:column; gap:0; display:none; border-bottom:1px solid var(--border);
+    }
+    nav ul.open{display:flex;}
+    nav li{border-top:1px solid var(--border);}
+    nav a{display:block; padding:16px 32px;}
+    .nav-toggle{display:block;}
+    .panel-grid, .services-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="logo">ML <span>Resources</span></div>
+    <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('nav ul').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <nav>
+      <ul id="navList">
+        <li><a href="#/home" data-route="home">Home</a></li>
+        <li><a href="#/services" data-route="services">Services</a></li>
+        <li><a href="#/projects" data-route="projects">Projects</a></li>
+        <li><a href="#/about" data-route="about">About</a></li>
+        <li><a href="#/contact" data-route="contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section class="page hero-page" id="page-home">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-inner">
+      <div data-reveal>
+        <h1 id="heroTitle"></h1>
+        <p class="tagline" id="heroTagline"></p>
+        <div class="meta-line" id="heroMeta"></div>
+        <div class="cta-row">
+          <a href="#/contact" class="btn btn-solid" id="heroCtaPrimary"></a>
+          <a href="#/projects" class="btn btn-outline" id="heroCtaSecondary"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-panels">
+      <div class="wrap" style="padding:64px 32px 0;">
+        <div class="section-head" data-reveal>
+          <h2>What we build</h2>
+          <p>A quick look at where ML Resources fits into your project. Full details on the Services page.</p>
+        </div>
+      </div>
+      <div class="panel-grid" id="homePanels"></div>
+      <div class="home-cta" data-reveal>
+        <h2>Have a project in mind?</h2>
+        <a href="#/contact" class="btn btn-solid">Request a quote</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="page" id="page-services">
+    <div class="section wrap">
+      <div class="section-head" data-reveal>
+        <h2>What we build</h2>
+        <p>From full remodels to focused repairs, every job gets the same hands-on approach and a schedule you can actually plan around.</p>
+      </div>
+      <div class="services-grid" id="servicesGrid"></div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="page" id="page-projects">
+    <div class="section wrap">
+      <div class="section-head" data-reveal>
+        <h2>Recent projects</h2>
+        <p>A sample of finished work. Update these anytime from the admin page.</p>
+      </div>
+      <div id="projectList"></div>
+      <p class="project-note" data-reveal>Placeholder project list — swap in real project names, types, and finished photos once you have them.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="page" id="page-about">
+    <div class="section wrap about-grid">
+      <div class="about-figures" id="aboutFigures" data-reveal></div>
+      <div class="about-copy" id="aboutCopy" data-reveal></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="page" id="page-contact">
+    <div class="section wrap contact-grid">
+      <div class="contact-info" data-reveal>
+        <div class="section-head" style="border:none; padding-bottom:0; margin-bottom:24px; display:block;">
+          <h2>Get a quote</h2>
+        </div>
+        <dl id="contactDl"></dl>
+        <div class="service-area" id="contactArea"></div>
+      </div>
+      <div data-reveal>
+        <form id="contactForm" name="contact" method="POST" data-netlify="true" onsubmit="handleFormSubmit(event)">
+          <input type="hidden" name="form-name" value="contact">
+          <div class="field">
+            <label for="cName">Name</label>
+            <input id="cName" name="name" type="text" required>
+          </div>
+          <div class="field">
+            <label for="cContact">Phone or email</label>
+            <input id="cContact" name="contact" type="text" required>
+          </div>
+          <div class="field">
+            <label for="cType">Project type</label>
+            <select id="cType" name="project-type">
+              <option>General contracting</option>
+              <option>Renovation / remodel</option>
+              <option>Addition</option>
+              <option>Site work</option>
+              <option>Repair</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cDetails">Project details</label>
+            <textarea id="cDetails" name="details" required></textarea>
+          </div>
+          <button class="btn btn-solid" type="submit">Send request</button>
+          <div class="form-msg" id="formMsg"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section class="page admin-page" id="page-admin">
+    <div id="adminLoginWrap" class="admin-login">
+      <h2>Admin sign in</h2>
+      <p>Enter the site passcode to edit content. Default passcode is <strong>admin123</strong> — change it from the Account tab after logging in.</p>
+      <div class="field">
+        <label for="adminPass">Passcode</label>
+        <input id="adminPass" type="password">
+      </div>
+      <button class="btn btn-solid" style="margin-top:14px;" onclick="tryAdminLogin()">Sign in</button>
+      <div class="form-msg" id="adminLoginMsg"></div>
+    </div>
+
+    <div id="adminShell" class="admin-shell" style="display:none;">
+      <div class="admin-warning">
+        This passcode is a basic deterrent only, not real security — anyone who views this page's source or storage could see stored content. For a publicly trusted admin login, this site would need a real backend.
+      </div>
+      <div class="admin-head">
+        <h2>Site content</h2>
+        <button class="btn btn-outline btn-small" onclick="adminLogout()">Sign out</button>
+      </div>
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" data-tab="home">Home</button>
+        <button class="admin-tab" data-tab="services">Services</button>
+        <button class="admin-tab" data-tab="projects">Projects</button>
+        <button class="admin-tab" data-tab="about">About</button>
+        <button class="admin-tab" data-tab="contact">Contact</button>
+        <button class="admin-tab" data-tab="account">Account</button>
+      </div>
+
+      <!-- HOME TAB -->
+      <div class="admin-panel active" id="tab-home">
+        <div class="admin-card">
+          <h3>Hero</h3>
+          <p class="hint">The large headline and text on the Home page.</p>
+          <div class="admin-grid-2">
+            <div class="field"><label>Headline — line 1</label><input id="a_titleLine1"></div>
+            <div class="field"><label>Headline — line 2</label><input id="a_titleLine2"></div>
+          </div>
+          <div class="field" style="margin-top:14px;"><label>Tagline</label><textarea id="a_tagline"></textarea></div>
+          <div class="field" style="margin-top:14px;"><label>Meta line (one item per line)</label><textarea id="a_meta"></textarea></div>
+          <div class="admin-grid-2" style="margin-top:14px;">
+            <div class="field"><label>Primary button label</label><input id="a_ctaPrimary"></div>
+            <div class="field"><label>Secondary button label</label><input id="a_ctaSecondary"></div>
+          </div>
+          <button class="btn btn-solid btn-small" style="margin-top:18px;" onclick="saveHero()">Save hero</button>
+          <div class="admin-save-msg" id="msg_hero"></div>
+        </div>
+
+        <div class="admin-card">
+          <h3>Background image</h3>
+          <p class="hint">Paste a URL to a photo (e.g. a jobsite photo hosted online) to use as the Home page background. Leave blank to use the default dark pattern.</p>
+          <div class="field"><label>Image URL</label><input id="a_bgImage" placeholder="https://..."></div>
+          <div class="bg-preview" id="bgPreview">No image set — using default background</div>
+          <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="btn btn-solid btn-small" onclick="saveBg()">Save background</button>
+            <button class="btn btn-outline btn-small" onclick="clearBg()">Reset to default</button>
+          </div>
+          <div class="admin-save-msg" id="msg_bg"></div>
+        </div>
+      </div>
+
+      <!-- SERVICES TAB -->
+      <div class="admin-panel" id="tab-services">
+        <div class="admin-card">
+          <h3>Services</h3>
+          <p class="hint">One service per line, formatted as: Title | Description</p>
+          <div class="field"><textarea id="a_services" style="min-height:180px;"></textarea></div>
+          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="saveServices()">Save services</button>
+          <div class="admin-save-msg" id="msg_services"></div>
+        </div>
+      </div>
+
+      <!-- PROJECTS TAB -->
+      <div class="admin-panel" id="tab-projects">
+        <div class="admin-card">
+          <h3>Projects</h3>
+          <p class="hint">One project per line, formatted as: Name | Type | Location | Year</p>
+          <div class="field"><textarea id="a_projects" style="min-height:180px;"></textarea></div>
+          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="saveProjects()">Save projects</button>
+          <div class="admin-save-msg" id="msg_projects"></div>
+        </div>
+      </div>
+
+      <!-- ABOUT TAB -->
+      <div class="admin-panel" id="tab-about">
+        <div class="admin-card">
+          <h3>Stats</h3>
+          <p class="hint">One stat per line, formatted as: Number | Label — exactly 4 lines.</p>
+          <div class="field"><textarea id="a_stats"></textarea></div>
+          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="saveAbout()">Save about</button>
+          <div class="admin-save-msg" id="msg_about"></div>
+        </div>
+        <div class="admin-card">
+          <h3>Bio</h3>
+          <p class="hint">One paragraph per line.</p>
+          <div class="field"><textarea id="a_paragraphs" style="min-height:150px;"></textarea></div>
+        </div>
+      </div>
+
+      <!-- CONTACT TAB -->
+      <div class="admin-panel" id="tab-contact">
+        <div class="admin-card">
+          <h3>Contact details</h3>
+          <div class="admin-grid-2">
+            <div class="field"><label>Phone</label><input id="a_phone"></div>
+            <div class="field"><label>Email</label><input id="a_email"></div>
+            <div class="field"><label>Hours</label><input id="a_hours"></div>
+            <div class="field"><label>License #</label><input id="a_license"></div>
+          </div>
+          <div class="field" style="margin-top:14px;"><label>City / State (footer)</label><input id="a_cityState"></div>
+          <div class="field" style="margin-top:14px;"><label>Service area note</label><textarea id="a_area"></textarea></div>
+          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="saveContact()">Save contact</button>
+          <div class="admin-save-msg" id="msg_contact"></div>
+        </div>
+      </div>
+
+      <!-- ACCOUNT TAB -->
+      <div class="admin-panel" id="tab-account">
+        <div class="admin-card">
+          <h3>Change admin passcode</h3>
+          <div class="admin-grid-2">
+            <div class="field"><label>New passcode</label><input id="a_newpass" type="password"></div>
+            <div class="field"><label>Confirm</label><input id="a_newpass2" type="password"></div>
+          </div>
+          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="changePasscode()">Update passcode</button>
+          <div class="admin-save-msg" id="msg_pass"></div>
+        </div>
+        <div class="admin-card">
+          <h3>Reset everything</h3>
+          <p class="hint">Restores all site text and the background image to the original defaults.</p>
+          <button class="btn btn-outline btn-small" onclick="resetAll()">Reset to defaults</button>
+          <div class="admin-save-msg" id="msg_reset"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>© <span id="year"></span> <span id="footerName">ML Resources</span>. All rights reserved. <span id="footerLicense"></span></div>
+    <a href="#/admin" class="hidden-admin" aria-hidden="true">.</a>
+  </div>
+</footer>
+
+<script>
+/* ---------------- Icons ---------------- */
+const ICONS = [
+  '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
+  '<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/><path d="M9 12h.01M15 12h.01"/>',
+  '<rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/>',
+  '<path d="M3 3l18 18M3 21L21 3"/><rect x="3" y="3" width="18" height="18"/>',
+  '<path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>',
+  '<rect x="4" y="4" width="16" height="16"/><path d="M4 9h16M9 4v16"/>'
+];
+function iconSvg(i, stroke){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.6">${ICONS[i % ICONS.length]}</svg>`;
+}
+
+/* ---------------- Default content ---------------- */
+const DEFAULT_CONTENT = {
+  hero: {
+    titleLine1:"Built on site.",
+    titleLine2:"Run by one person.",
+    tagline:"ML Resources handles general contracting, renovations, and additions from the first walkthrough to the final punch list — with one point of contact the whole way through.",
+    meta:["Licensed & insured","Free on-site estimates","Serving [Your Service Area]"],
+    ctaPrimary:"Request a quote",
+    ctaSecondary:"See recent work",
+    bgImage:""
+  },
+  services:[
+    {title:"General contracting", description:"Ground-up builds and full project management, coordinated from permits to final walkthrough."},
+    {title:"Renovations & remodels", description:"Kitchens, baths, and whole-floor reworks that respect the structure you already have."},
+    {title:"Additions", description:"New rooms, second stories, and extensions tied cleanly into existing framing and finishes."},
+    {title:"Site work & prep", description:"Grading, foundations, and groundwork that set the rest of the project up to go smoothly."},
+    {title:"Repairs & punch-list work", description:"Structural fixes, water damage, and the smaller jobs other contractors turn down."},
+    {title:"Project management", description:"Scheduling, subcontractor coordination, and budget tracking, handled by one direct contact."}
+  ],
+  projects:[
+    {name:"Maple Street Addition", type:"Second-story addition, 620 sq ft", location:"[Neighborhood]", year:"2025"},
+    {name:"Birchwood Kitchen Remodel", type:"Full gut renovation", location:"[Neighborhood]", year:"2025"},
+    {name:"Harbor Rd. Foundation Repair", type:"Structural repair & underpinning", location:"[Neighborhood]", year:"2024"},
+    {name:"Pine Ave. Site Grading", type:"Site prep for new build", location:"[Neighborhood]", year:"2024"}
+  ],
+  about:{
+    stats:[
+      {num:"[X]", label:"Years building"},
+      {num:"[X]", label:"Projects completed"},
+      {num:"1", label:"Point of contact — you talk to the person doing the work"},
+      {num:"[X]", label:"Mile service radius"}
+    ],
+    paragraphs:[
+      "ML Resources is an owner-operated construction business — every project is run directly by the person on site, not handed off between account managers.",
+      "[Add a short founder story here: how long you've been in the trade, what kind of work you specialize in, and what makes your approach different.]",
+      "Every estimate is walked through in person, every schedule is set before work begins, and every job closes with a final walkthrough — no surprises at the punch list."
+    ]
+  },
+  contact:{
+    phone:"[Your phone number]",
+    email:"[you@mlresources.com]",
+    hours:"Mon–Fri, 7am–5pm",
+    license:"[License #]",
+    cityState:"[City, State]",
+    area:"Serving [city / region] and surrounding areas. On-site estimates scheduled within [X] business days."
+  }
+};
+
+let content = JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+let adminAuthed = false;
+
+/* ---------------- Storage adapter ----------------
+   In the Claude artifact preview, window.storage is used directly.
+   Once deployed to Netlify, window.storage doesn't exist, so this
+   talks to the Netlify Function instead (backed by Netlify Blobs),
+   with a same-browser localStorage fallback if the function isn't
+   reachable (e.g. a plain static-only deploy with no Functions). */
+const siteStorage = {
+  async get(key, shared){
+    if(window.storage){
+      try{ return await window.storage.get(key, shared); }catch(e){ return null; }
+    }
+    try{
+      const res = await fetch('/.netlify/functions/content?key='+encodeURIComponent(key));
+      if(res.ok){
+        const data = await res.json();
+        if(data && data.value) return {value:data.value};
+      }
+    }catch(e){}
+    const local = localStorage.getItem('mlr_'+key);
+    return local ? {value: local} : null;
+  },
+  async set(key, value, shared){
+    if(window.storage){
+      try{ return await window.storage.set(key, value, shared); }catch(e){ return null; }
+    }
+    try{
+      const res = await fetch('/.netlify/functions/content', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({key, value})
+      });
+      if(res.ok){ localStorage.setItem('mlr_'+key, value); return {value}; }
+    }catch(e){}
+    try{ localStorage.setItem('mlr_'+key, value); }catch(e){}
+    return {value};
+  }
+};
+
+/* ---------------- Storage ---------------- */
+async function loadContent(){
+  try{
+    const res = await siteStorage.get('site-content', true);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      content = Object.assign({}, DEFAULT_CONTENT, parsed);
+    } else {
+      await siteStorage.set('site-content', JSON.stringify(DEFAULT_CONTENT), true);
+    }
+  }catch(e){
+    console.error('Storage load failed, using defaults', e);
+  }
+  renderEverything();
+}
+
+async function persistContent(){
+  try{
+    await siteStorage.set('site-content', JSON.stringify(content), true);
+    return true;
+  }catch(e){
+    console.error('Storage save failed', e);
+    return false;
+  }
+}
+
+async function getPasscode(){
+  try{
+    const res = await siteStorage.get('admin-auth', true);
+    if(res && res.value) return res.value;
+  }catch(e){}
+  return 'admin123';
+}
+async function setPasscode(pass){
+  try{ await siteStorage.set('admin-auth', pass, true); return true; }
+  catch(e){ return false; }
+}
+
+/* ---------------- Render ---------------- */
+function renderEverything(){
+  renderHome();
+  renderServices();
+  renderProjects();
+  renderAbout();
+  renderContact();
+  renderFooter();
+  renderAdminForms();
+  const activeEl = document.querySelector('.page.active');
+  if(activeEl) initReveal(activeEl);
+}
+
+function renderHome(){
+  const h = content.hero;
+  document.getElementById('heroTitle').innerHTML = escapeHtml(h.titleLine1) + '<br>' + escapeHtml(h.titleLine2);
+  document.getElementById('heroTagline').textContent = h.tagline;
+  document.getElementById('heroMeta').innerHTML = h.meta.map(m=>`<span>${escapeHtml(m)}</span>`).join('');
+  document.getElementById('heroCtaPrimary').textContent = h.ctaPrimary;
+  document.getElementById('heroCtaSecondary').textContent = h.ctaSecondary;
+
+  const heroBg = document.getElementById('heroBg');
+  if(h.bgImage){
+    heroBg.style.backgroundImage =
+      `linear-gradient(180deg, rgba(20,24,27,.55), rgba(20,24,27,.94)), url("${h.bgImage}")`;
+  } else {
+    heroBg.style.backgroundImage =
+      `linear-gradient(180deg, rgba(20,24,27,.6), rgba(20,24,27,.96)), repeating-linear-gradient(45deg, rgba(127,163,178,0.05) 0px, rgba(127,163,178,0.05) 1px, transparent 1px, transparent 28px)`;
+  }
+
+  document.getElementById('homePanels').innerHTML = content.services.slice(0,3).map((s,i)=>`
+    <div class="panel" data-reveal>
+      ${iconSvg(i,'#C1552A')}
+      <h3>${escapeHtml(s.title)}</h3>
+      <p>${escapeHtml(s.description)}</p>
+    </div>`).join('');
+}
+
+function renderServices(){
+  document.getElementById('servicesGrid').innerHTML = content.services.map((s,i)=>`
+    <div class="service" data-reveal>
+      ${iconSvg(i,'#C1552A')}
+      <h3>${escapeHtml(s.title)}</h3>
+      <p>${escapeHtml(s.description)}</p>
+    </div>`).join('');
+}
+
+function renderProjects(){
+  document.getElementById('projectList').innerHTML = content.projects.map((p,i)=>`
+    <div class="project-row" data-reveal>
+      ${iconSvg(i,'#7FA3B2')}
+      <div>
+        <div class="p-name">${escapeHtml(p.name)}</div>
+        <div class="p-type">${escapeHtml(p.type)}</div>
+      </div>
+      <div class="p-loc">${escapeHtml(p.location)}</div>
+      <div class="p-year">${escapeHtml(p.year)}</div>
+    </div>`).join('');
+}
+
+function renderAbout(){
+  document.getElementById('aboutFigures').innerHTML = content.about.stats.map(s=>`
+    <div class="figure"><div class="num">${escapeHtml(s.num)}</div><div class="label">${escapeHtml(s.label)}</div></div>
+  `).join('');
+  document.getElementById('aboutCopy').innerHTML = content.about.paragraphs.map(p=>`<p>${escapeHtml(p)}</p>`).join('');
+}
+
+function renderContact(){
+  const c = content.contact;
+  document.getElementById('contactDl').innerHTML = `
+    <dt>Phone</dt><dd>${escapeHtml(c.phone)}</dd>
+    <dt>Email</dt><dd>${escapeHtml(c.email)}</dd>
+    <dt>Hours</dt><dd>${escapeHtml(c.hours)}</dd>
+  `;
+  document.getElementById('contactArea').textContent = c.area;
+}
+
+function renderFooter(){
+  document.getElementById('footerLicense').textContent = `· ${content.contact.license} · ${content.contact.cityState}`;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
+/* ---------------- Reveal animation ---------------- */
+function initReveal(container){
+  const els = container.querySelectorAll('[data-reveal]');
+  els.forEach((el,i)=>{
+    el.classList.remove('in-view');
+    el.style.transitionDelay = Math.min(i*60,480)+'ms';
+  });
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.12});
+    els.forEach(el=>io.observe(el));
+  } else {
+    els.forEach(el=>el.classList.add('in-view'));
+  }
+}
+
+/* ---------------- Router ---------------- */
+const ROUTES = ['home','services','projects','about','contact','admin'];
+function currentRoute(){
+  const h = window.location.hash.replace('#/','').replace('#','');
+  return ROUTES.includes(h) ? h : 'home';
+}
+function showPage(route){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById('page-'+route);
+  el.classList.add('active');
+  window.scrollTo(0,0);
+  document.querySelectorAll('nav a').forEach(a=>{
+    a.classList.toggle('active', a.dataset.route === route);
+  });
+  document.querySelector('nav ul').classList.remove('open');
+  initReveal(el);
+}
+window.addEventListener('hashchange', ()=> showPage(currentRoute()));
+
+/* ---------------- Contact form ---------------- */
+function handleFormSubmit(e){
+  e.preventDefault();
+  const form = document.getElementById('contactForm');
+  const msg = document.getElementById('formMsg');
+  const data = new URLSearchParams(new FormData(form)).toString();
+
+  fetch('/', {
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:data
+  }).then((res)=>{
+    if(res.ok){
+      msg.textContent = "Thanks — your request has been sent. We'll be in touch shortly.";
+      form.reset();
+    } else {
+      throw new Error('bad response');
+    }
+  }).catch(()=>{
+    msg.textContent =
+      "This form submits via Netlify Forms once the site is deployed to Netlify — it won't deliver from this preview.";
+  });
+}
+
+/* ---------------- Admin: auth ---------------- */
+async function tryAdminLogin(){
+  const entered = document.getElementById('adminPass').value;
+  const real = await getPasscode();
+  if(entered === real){
+    adminAuthed = true;
+    document.getElementById('adminLoginWrap').style.display = 'none';
+    document.getElementById('adminShell').style.display = 'block';
+    document.getElementById('adminLoginMsg').textContent = '';
+    renderAdminForms();
+  } else {
+    document.getElementById('adminLoginMsg').textContent = 'Incorrect passcode.';
+    document.getElementById('adminLoginMsg').style.color = '#D3775A';
+  }
+}
+function adminLogout(){
+  adminAuthed = false;
+  document.getElementById('adminPass').value = '';
+  document.getElementById('adminLoginMsg').textContent = '';
+  document.getElementById('adminShell').style.display = 'none';
+  document.getElementById('adminLoginWrap').style.display = 'block';
+}
+
+/* ---------------- Admin: tabs ---------------- */
+document.getElementById('adminTabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.admin-tab');
+  if(!btn) return;
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+});
+
+/* ---------------- Admin: form fill ---------------- */
+function renderAdminForms(){
+  const h = content.hero;
+  setVal('a_titleLine1', h.titleLine1);
+  setVal('a_titleLine2', h.titleLine2);
+  setVal('a_tagline', h.tagline);
+  setVal('a_meta', h.meta.join('\n'));
+  setVal('a_ctaPrimary', h.ctaPrimary);
+  setVal('a_ctaSecondary', h.ctaSecondary);
+  setVal('a_bgImage', h.bgImage);
+  updateBgPreview();
+
+  setVal('a_services', content.services.map(s=>`${s.title} | ${s.description}`).join('\n'));
+  setVal('a_projects', content.projects.map(p=>`${p.name} | ${p.type} | ${p.location} | ${p.year}`).join('\n'));
+
+  setVal('a_stats', content.about.stats.map(s=>`${s.num} | ${s.label}`).join('\n'));
+  setVal('a_paragraphs', content.about.paragraphs.join('\n'));
+
+  const c = content.contact;
+  setVal('a_phone', c.phone);
+  setVal('a_email', c.email);
+  setVal('a_hours', c.hours);
+  setVal('a_license', c.license);
+  setVal('a_cityState', c.cityState);
+  setVal('a_area', c.area);
+}
+function setVal(id, val){
+  const el = document.getElementById(id);
+  if(el) el.value = val;
+}
+function flash(id, text, ok=true){
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.style.color = ok ? '#7FBE8C' : '#D3775A';
+  setTimeout(()=>{ if(el.textContent===text) el.textContent=''; }, 3000);
+}
+
+/* ---------------- Admin: save handlers ---------------- */
+async function saveHero(){
+  content.hero.titleLine1 = document.getElementById('a_titleLine1').value;
+  content.hero.titleLine2 = document.getElementById('a_titleLine2').value;
+  content.hero.tagline = document.getElementById('a_tagline').value;
+  content.hero.meta = document.getElementById('a_meta').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  content.hero.ctaPrimary = document.getElementById('a_ctaPrimary').value;
+  content.hero.ctaSecondary = document.getElementById('a_ctaSecondary').value;
+  const ok = await persistContent();
+  renderHome();
+  flash('msg_hero', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+function updateBgPreview(){
+  const url = document.getElementById('a_bgImage').value.trim();
+  const prev = document.getElementById('bgPreview');
+  if(url){
+    prev.style.backgroundImage = `url("${url}")`;
+    prev.textContent = '';
+  } else {
+    prev.style.backgroundImage = 'none';
+    prev.textContent = 'No image set — using default background';
+  }
+}
+document.addEventListener('input', (e)=>{ if(e.target && e.target.id==='a_bgImage') updateBgPreview(); });
+
+async function saveBg(){
+  content.hero.bgImage = document.getElementById('a_bgImage').value.trim();
+  const ok = await persistContent();
+  renderHome();
+  flash('msg_bg', ok ? 'Saved. This background is visible to everyone viewing the site.' : 'Save failed — try again.', ok);
+}
+function clearBg(){
+  document.getElementById('a_bgImage').value = '';
+  updateBgPreview();
+  saveBg();
+}
+
+async function saveServices(){
+  const lines = document.getElementById('a_services').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  content.services = lines.map(l=>{
+    const [title, ...rest] = l.split('|');
+    return {title:(title||'').trim(), description:rest.join('|').trim()};
+  });
+  const ok = await persistContent();
+  renderServices(); renderHome();
+  flash('msg_services', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+async function saveProjects(){
+  const lines = document.getElementById('a_projects').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  content.projects = lines.map(l=>{
+    const parts = l.split('|').map(p=>p.trim());
+    return {name:parts[0]||'', type:parts[1]||'', location:parts[2]||'', year:parts[3]||''};
+  });
+  const ok = await persistContent();
+  renderProjects();
+  flash('msg_projects', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+async function saveAbout(){
+  const statLines = document.getElementById('a_stats').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  content.about.stats = statLines.map(l=>{
+    const [num, ...rest] = l.split('|');
+    return {num:(num||'').trim(), label:rest.join('|').trim()};
+  });
+  content.about.paragraphs = document.getElementById('a_paragraphs').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  const ok = await persistContent();
+  renderAbout();
+  flash('msg_about', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+async function saveContact(){
+  content.contact.phone = document.getElementById('a_phone').value;
+  content.contact.email = document.getElementById('a_email').value;
+  content.contact.hours = document.getElementById('a_hours').value;
+  content.contact.license = document.getElementById('a_license').value;
+  content.contact.cityState = document.getElementById('a_cityState').value;
+  content.contact.area = document.getElementById('a_area').value;
+  const ok = await persistContent();
+  renderContact(); renderFooter();
+  flash('msg_contact', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+async function changePasscode(){
+  const p1 = document.getElementById('a_newpass').value;
+  const p2 = document.getElementById('a_newpass2').value;
+  if(!p1 || p1.length < 4){ flash('msg_pass', 'Use at least 4 characters.', false); return; }
+  if(p1 !== p2){ flash('msg_pass', "Passcodes don't match.", false); return; }
+  const ok = await setPasscode(p1);
+  document.getElementById('a_newpass').value = '';
+  document.getElementById('a_newpass2').value = '';
+  flash('msg_pass', ok ? 'Passcode updated.' : 'Save failed — try again.', ok);
+}
+
+async function resetAll(){
+  if(!confirm('Reset all site text and the background image to defaults? This cannot be undone.')) return;
+  content = JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+  const ok = await persistContent();
+  renderEverything();
+  flash('msg_reset', ok ? 'Reset to defaults.' : 'Save failed — try again.', ok);
+}
+
+/* ---------------- Init ---------------- */
+document.getElementById('year').textContent = new Date().getFullYear();
+if(!window.location.hash) window.location.hash = '#/home';
+showPage(currentRoute());
+loadContent();
+</script>
+
+</body>
+</html>

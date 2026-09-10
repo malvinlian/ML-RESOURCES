@@ -1,0 +1,9 @@
+{
+  "name": "ml-resources-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ML Resources construction company website",
+  "dependencies": {
+    "@netlify/blobs": "^7.3.0"
+  }
+}
