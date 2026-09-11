@@ -66,6 +66,8 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:18px 32px; max-width:var(--max-w); margin:0 auto;
   }
+  .logo-wrap{display:flex; align-items:center; gap:10px;}
+  .logo-img{height:30px; width:auto; display:none;}
   .logo{font-family:'Archivo Expanded', sans-serif; font-weight:700; font-size:19px; letter-spacing:.01em;}
   .logo span{color:var(--rust);}
   nav ul{display:flex; gap:8px; list-style:none;}
@@ -175,18 +177,40 @@
   .service p{color:var(--text-muted); font-size:15px;}
 
   /* ---------- PROJECTS ---------- */
-  .project-row{
-    display:grid; grid-template-columns:56px 1fr auto auto; gap:24px; align-items:center;
-    padding:22px 6px; border-bottom:1px solid var(--border);
-    transition:background .2s ease, padding-left .2s ease;
+  .project-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:1px;
+    background:var(--border); border:1px solid var(--border);
   }
-  .project-row:first-of-type{border-top:1px solid var(--border);}
-  .project-row:hover{background:var(--surface); padding-left:16px;}
-  .project-row svg{width:38px; height:38px;}
-  .project-row .p-name{font-family:'Archivo', sans-serif; font-weight:700; font-size:19px;}
-  .project-row .p-type{color:var(--text-muted); font-size:14px; margin-top:4px;}
-  .project-row .p-loc, .project-row .p-year{font-size:14px; color:var(--text-muted); text-align:right; white-space:nowrap;}
-  .project-note{margin-top:28px; font-size:14px; color:var(--text-muted); border-left:3px solid var(--rust); padding-left:14px;}
+  .project-card{background:var(--bg); overflow:hidden; transition:transform .25s ease;}
+  .project-card:hover{transform:translateY(-3px);}
+  .project-thumb{
+    aspect-ratio:16/10; background-size:cover; background-position:center; background-color:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .project-thumb svg{width:40px; height:40px;}
+  .project-body{padding:22px 24px;}
+  .project-body .p-name{font-family:'Archivo', sans-serif; font-weight:700; font-size:19px;}
+  .project-body .p-type{color:var(--text-muted); font-size:14px; margin-top:6px;}
+  .project-body .p-desc{margin-top:10px; font-size:14px; color:var(--text-muted);}
+  .project-body .p-meta{
+    display:flex; justify-content:space-between; margin-top:14px; font-size:13px; color:var(--steel);
+    border-top:1px solid var(--border); padding-top:12px;
+  }
+  .empty-note{color:var(--text-muted); font-size:15px;}
+
+  /* ---------- LICENSES ---------- */
+  .license-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--border); border:1px solid var(--border);
+  }
+  .license-card{background:var(--bg);}
+  .license-thumb{
+    aspect-ratio:4/3; background-size:cover; background-position:center; background-color:var(--surface);
+    display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;
+  }
+  .license-body{padding:18px 20px;}
+  .license-body h3{font-size:16px; margin-bottom:6px;}
+  .license-body p{font-size:13px; color:var(--text-muted);}
 
   /* ---------- ABOUT ---------- */
   .about-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:start;}
@@ -263,14 +287,24 @@
     font-size:13px; color:var(--text-muted); background:var(--bg-alt); border:1px solid var(--border);
     padding:14px 16px; margin-bottom:28px; border-left:3px solid var(--rust);
   }
+  .admin-list-item{
+    background:var(--bg-alt); border:1px solid var(--border); padding:20px; margin-bottom:14px;
+  }
+  .admin-list-item:last-child{margin-bottom:0;}
+  .img-upload-preview{
+    margin-top:8px; height:110px; border:1px solid var(--border);
+    background-size:cover; background-position:center; background-color:var(--surface);
+    display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;
+  }
+  .icon-preview svg{width:26px; height:26px;}
 
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:860px){
     .panel-grid, .services-grid{grid-template-columns:1fr 1fr;}
     .about-grid, .contact-grid, .admin-grid-2{grid-template-columns:1fr;}
     .section-head{grid-template-columns:1fr;}
-    .project-row{grid-template-columns:40px 1fr; row-gap:4px;}
-    .project-row .p-loc, .project-row .p-year{grid-column:2; text-align:left;}
+    .project-grid{grid-template-columns:1fr;}
+    .license-grid{grid-template-columns:1fr 1fr;}
   }
   @media (max-width:620px){
     nav ul{
@@ -282,6 +316,7 @@
     nav a{display:block; padding:16px 32px;}
     .nav-toggle{display:block;}
     .panel-grid, .services-grid{grid-template-columns:1fr;}
+    .license-grid{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -289,7 +324,10 @@
 
 <header>
   <div class="nav-inner">
-    <div class="logo">ML <span>Resources</span></div>
+    <div class="logo-wrap">
+      <img id="logoImg" class="logo-img" alt="ML Resources logo">
+      <div class="logo">ML <span>Resources</span></div>
+    </div>
     <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('nav ul').classList.toggle('open')">
       <span></span><span></span><span></span>
     </button>
@@ -298,6 +336,7 @@
         <li><a href="#/home" data-route="home">Home</a></li>
         <li><a href="#/services" data-route="services">Services</a></li>
         <li><a href="#/projects" data-route="projects">Projects</a></li>
+        <li><a href="#/licenses" data-route="licenses">Licenses</a></li>
         <li><a href="#/about" data-route="about">About</a></li>
         <li><a href="#/contact" data-route="contact">Contact</a></li>
       </ul>
@@ -352,11 +391,21 @@
   <section class="page" id="page-projects">
     <div class="section wrap">
       <div class="section-head" data-reveal>
-        <h2>Recent projects</h2>
-        <p>A sample of finished work. Update these anytime from the admin page.</p>
+        <h2>Project Portfolio</h2>
+        <p>A look at finished work. Add real photos and details for each project from the admin page.</p>
       </div>
-      <div id="projectList"></div>
-      <p class="project-note" data-reveal>Placeholder project list — swap in real project names, types, and finished photos once you have them.</p>
+      <div class="project-grid" id="projectList"></div>
+    </div>
+  </section>
+
+  <!-- LICENSES -->
+  <section class="page" id="page-licenses">
+    <div class="section wrap">
+      <div class="section-head" data-reveal>
+        <h2>Licenses &amp; insurance</h2>
+        <p>Documentation on file for ML Resources.</p>
+      </div>
+      <div class="license-grid" id="licenseGrid"></div>
     </div>
   </section>
 
@@ -436,6 +485,7 @@
         <button class="admin-tab active" data-tab="home">Home</button>
         <button class="admin-tab" data-tab="services">Services</button>
         <button class="admin-tab" data-tab="projects">Projects</button>
+        <button class="admin-tab" data-tab="licenses">Licenses</button>
         <button class="admin-tab" data-tab="about">About</button>
         <button class="admin-tab" data-tab="contact">Contact</button>
         <button class="admin-tab" data-tab="account">Account</button>
@@ -471,15 +521,31 @@
           </div>
           <div class="admin-save-msg" id="msg_bg"></div>
         </div>
+
+        <div class="admin-card">
+          <h3>Logo</h3>
+          <p class="hint">Upload a logo image to show next to the "ML Resources" name in the header. Leave empty to show the text-only logo.</p>
+          <input type="file" accept="image/*" onchange="handleImageUpload(this, '#a_logoImage', '#logoPreview')">
+          <input type="hidden" id="a_logoImage" value="">
+          <div class="img-upload-preview" id="logoPreview" style="height:70px;">No logo set — showing "ML Resources" text only</div>
+          <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="btn btn-solid btn-small" onclick="saveLogo()">Save logo</button>
+            <button class="btn btn-outline btn-small" onclick="clearLogo()">Remove logo</button>
+          </div>
+          <div class="admin-save-msg" id="msg_logo"></div>
+        </div>
       </div>
 
       <!-- SERVICES TAB -->
       <div class="admin-panel" id="tab-services">
         <div class="admin-card">
           <h3>Services</h3>
-          <p class="hint">One service per line, formatted as: Title | Description</p>
-          <div class="field"><textarea id="a_services" style="min-height:180px;"></textarea></div>
-          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="saveServices()">Save services</button>
+          <p class="hint">Edit, remove, or add services. Each one shows on the Services page (and the first three appear on Home).</p>
+          <div id="servicesAdminList"></div>
+          <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="btn btn-outline btn-small" onclick="addServiceItem()">Add service</button>
+            <button class="btn btn-solid btn-small" onclick="saveServices()">Save services</button>
+          </div>
           <div class="admin-save-msg" id="msg_services"></div>
         </div>
       </div>
@@ -487,11 +553,28 @@
       <!-- PROJECTS TAB -->
       <div class="admin-panel" id="tab-projects">
         <div class="admin-card">
-          <h3>Projects</h3>
-          <p class="hint">One project per line, formatted as: Name | Type | Location | Year</p>
-          <div class="field"><textarea id="a_projects" style="min-height:180px;"></textarea></div>
-          <button class="btn btn-solid btn-small" style="margin-top:14px;" onclick="saveProjects()">Save projects</button>
+          <h3>Project Portfolio</h3>
+          <p class="hint">Add a photo and details for each finished project. Photos are stored with the rest of your site content, so keep individual images reasonably small (under ~500KB each works well).</p>
+          <div id="projectsAdminList"></div>
+          <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="btn btn-outline btn-small" onclick="addProjectItem()">Add project</button>
+            <button class="btn btn-solid btn-small" onclick="saveProjects()">Save projects</button>
+          </div>
           <div class="admin-save-msg" id="msg_projects"></div>
+        </div>
+      </div>
+
+      <!-- LICENSES TAB -->
+      <div class="admin-panel" id="tab-licenses">
+        <div class="admin-card">
+          <h3>Licenses &amp; insurance</h3>
+          <p class="hint">Upload a photo or scan of each license, permit, or insurance certificate you want visible on the Licenses page.</p>
+          <div id="licensesAdminList"></div>
+          <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="btn btn-outline btn-small" onclick="addLicenseItem()">Add license</button>
+            <button class="btn btn-solid btn-small" onclick="saveLicenses()">Save licenses</button>
+          </div>
+          <div class="admin-save-msg" id="msg_licenses"></div>
         </div>
       </div>
 
@@ -561,16 +644,29 @@
 
 <script>
 /* ---------------- Icons ---------------- */
-const ICONS = [
-  '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
-  '<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/><path d="M9 12h.01M15 12h.01"/>',
-  '<rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/>',
-  '<path d="M3 3l18 18M3 21L21 3"/><rect x="3" y="3" width="18" height="18"/>',
-  '<path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>',
-  '<rect x="4" y="4" width="16" height="16"/><path d="M4 9h16M9 4v16"/>'
-];
-function iconSvg(i, stroke){
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.6">${ICONS[i % ICONS.length]}</svg>`;
+const ICON_LIB = {
+  general:  {label:'Frame / General',      path:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>'},
+  remodel:  {label:'House / Remodel',       path:'<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/><path d="M9 12h.01M15 12h.01"/>'},
+  addition: {label:'Addition / Box',        path:'<rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/>'},
+  sitework: {label:'Site Work',             path:'<path d="M3 3l18 18M3 21L21 3"/><rect x="3" y="3" width="18" height="18"/>'},
+  repair:   {label:'Repair / Star',         path:'<path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>'},
+  pm:       {label:'Project Management',    path:'<rect x="4" y="4" width="16" height="16"/><path d="M4 9h16M9 4v16"/>'},
+  hardhat:  {label:'Hard Hat',              path:'<path d="M4 18h16"/><path d="M6 18a6 6 0 0 1 12 0"/><rect x="9" y="15" width="6" height="3"/>'},
+  crane:    {label:'Crane',                 path:'<path d="M4 20h6"/><path d="M6 20V6"/><path d="M6 6h12"/><path d="M14 6v6"/><path d="M14 12h4"/>'},
+  truck:    {label:'Truck / Delivery',      path:'<rect x="2" y="9" width="12" height="8"/><path d="M14 12h4l3 3v2h-3"/><circle cx="6" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/>'},
+  toolbox:  {label:'Toolbox',               path:'<rect x="3" y="9" width="18" height="10"/><path d="M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/><path d="M3 13h18"/>'},
+  ruler:    {label:'Ruler / Measure',       path:'<path d="M3 17L17 3l4 4L7 21z"/><path d="M13 7l2 2M9 11l2 2"/>'},
+  wall:     {label:'Wall / Brick',          path:'<rect x="3" y="4" width="18" height="16"/><path d="M3 10h18M3 16h18M9 4v6M15 10v6M9 16v4"/>'},
+  shield:   {label:'Shield / License',      path:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/>'},
+  wrench:   {label:'Wrench',                path:'<path d="M14.7 6.3a4 4 0 1 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.8 2.8-2-2z"/>'}
+};
+const ICON_ORDER = Object.keys(ICON_LIB);
+function iconSvg(key, stroke){
+  const icon = ICON_LIB[key] || ICON_LIB.general;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.6">${icon.path}</svg>`;
+}
+function iconOptions(selected){
+  return ICON_ORDER.map(k=>`<option value="${k}" ${k===selected?'selected':''}>${ICON_LIB[k].label}</option>`).join('');
 }
 
 /* ---------------- Default content ---------------- */
@@ -585,19 +681,21 @@ const DEFAULT_CONTENT = {
     bgImage:""
   },
   services:[
-    {title:"General contracting", description:"Ground-up builds and full project management, coordinated from permits to final walkthrough."},
-    {title:"Renovations & remodels", description:"Kitchens, baths, and whole-floor reworks that respect the structure you already have."},
-    {title:"Additions", description:"New rooms, second stories, and extensions tied cleanly into existing framing and finishes."},
-    {title:"Site work & prep", description:"Grading, foundations, and groundwork that set the rest of the project up to go smoothly."},
-    {title:"Repairs & punch-list work", description:"Structural fixes, water damage, and the smaller jobs other contractors turn down."},
-    {title:"Project management", description:"Scheduling, subcontractor coordination, and budget tracking, handled by one direct contact."}
+    {title:"General contracting", description:"Ground-up builds and full project management, coordinated from permits to final walkthrough.", icon:"general"},
+    {title:"Renovations & remodels", description:"Kitchens, baths, and whole-floor reworks that respect the structure you already have.", icon:"remodel"},
+    {title:"Additions", description:"New rooms, second stories, and extensions tied cleanly into existing framing and finishes.", icon:"addition"},
+    {title:"Site work & prep", description:"Grading, foundations, and groundwork that set the rest of the project up to go smoothly.", icon:"sitework"},
+    {title:"Repairs & punch-list work", description:"Structural fixes, water damage, and the smaller jobs other contractors turn down.", icon:"repair"},
+    {title:"Project management", description:"Scheduling, subcontractor coordination, and budget tracking, handled by one direct contact.", icon:"pm"}
   ],
   projects:[
-    {name:"Maple Street Addition", type:"Second-story addition, 620 sq ft", location:"[Neighborhood]", year:"2025"},
-    {name:"Birchwood Kitchen Remodel", type:"Full gut renovation", location:"[Neighborhood]", year:"2025"},
-    {name:"Harbor Rd. Foundation Repair", type:"Structural repair & underpinning", location:"[Neighborhood]", year:"2024"},
-    {name:"Pine Ave. Site Grading", type:"Site prep for new build", location:"[Neighborhood]", year:"2024"}
+    {name:"Maple Street Addition", type:"Second-story addition, 620 sq ft", location:"[Neighborhood]", year:"2025", description:"", image:""},
+    {name:"Birchwood Kitchen Remodel", type:"Full gut renovation", location:"[Neighborhood]", year:"2025", description:"", image:""},
+    {name:"Harbor Rd. Foundation Repair", type:"Structural repair & underpinning", location:"[Neighborhood]", year:"2024", description:"", image:""},
+    {name:"Pine Ave. Site Grading", type:"Site prep for new build", location:"[Neighborhood]", year:"2024", description:"", image:""}
   ],
+  licenses:[],
+  site:{ logoImage:"" },
   about:{
     stats:[
       {num:"[X]", label:"Years building"},
@@ -705,12 +803,25 @@ function renderEverything(){
   renderHome();
   renderServices();
   renderProjects();
+  renderLicenses();
   renderAbout();
   renderContact();
   renderFooter();
+  renderLogo();
   renderAdminForms();
   const activeEl = document.querySelector('.page.active');
   if(activeEl) initReveal(activeEl);
+}
+
+function renderLogo(){
+  const img = document.getElementById('logoImg');
+  const url = content.site && content.site.logoImage;
+  if(url){
+    img.src = url;
+    img.style.display = 'block';
+  } else {
+    img.style.display = 'none';
+  }
 }
 
 function renderHome(){
@@ -730,33 +841,56 @@ function renderHome(){
       `linear-gradient(180deg, rgba(20,24,27,.6), rgba(20,24,27,.96)), repeating-linear-gradient(45deg, rgba(127,163,178,0.05) 0px, rgba(127,163,178,0.05) 1px, transparent 1px, transparent 28px)`;
   }
 
-  document.getElementById('homePanels').innerHTML = content.services.slice(0,3).map((s,i)=>`
+  document.getElementById('homePanels').innerHTML = content.services.slice(0,3).map((s)=>`
     <div class="panel" data-reveal>
-      ${iconSvg(i,'#C1552A')}
+      ${iconSvg(s.icon,'#C1552A')}
       <h3>${escapeHtml(s.title)}</h3>
       <p>${escapeHtml(s.description)}</p>
     </div>`).join('');
 }
 
 function renderServices(){
-  document.getElementById('servicesGrid').innerHTML = content.services.map((s,i)=>`
+  document.getElementById('servicesGrid').innerHTML = content.services.map((s)=>`
     <div class="service" data-reveal>
-      ${iconSvg(i,'#C1552A')}
+      ${iconSvg(s.icon,'#C1552A')}
       <h3>${escapeHtml(s.title)}</h3>
       <p>${escapeHtml(s.description)}</p>
     </div>`).join('');
 }
 
 function renderProjects(){
-  document.getElementById('projectList').innerHTML = content.projects.map((p,i)=>`
-    <div class="project-row" data-reveal>
-      ${iconSvg(i,'#7FA3B2')}
-      <div>
+  const wrap = document.getElementById('projectList');
+  if(!content.projects || content.projects.length === 0){
+    wrap.innerHTML = `<p class="empty-note">No projects added yet — add your first one from the admin page.</p>`;
+    return;
+  }
+  wrap.innerHTML = content.projects.map((p,i)=>`
+    <div class="project-card" data-reveal>
+      <div class="project-thumb" style="${p.image ? `background-image:url('${p.image}')` : ''}">
+        ${p.image ? '' : iconSvg(ICON_ORDER[i % ICON_ORDER.length], '#7FA3B2')}
+      </div>
+      <div class="project-body">
         <div class="p-name">${escapeHtml(p.name)}</div>
         <div class="p-type">${escapeHtml(p.type)}</div>
+        ${p.description ? `<div class="p-desc">${escapeHtml(p.description)}</div>` : ''}
+        <div class="p-meta"><span>${escapeHtml(p.location)}</span><span>${escapeHtml(p.year)}</span></div>
       </div>
-      <div class="p-loc">${escapeHtml(p.location)}</div>
-      <div class="p-year">${escapeHtml(p.year)}</div>
+    </div>`).join('');
+}
+
+function renderLicenses(){
+  const grid = document.getElementById('licenseGrid');
+  if(!content.licenses || content.licenses.length === 0){
+    grid.innerHTML = `<p class="empty-note">No licenses added yet — add one from the admin page.</p>`;
+    return;
+  }
+  grid.innerHTML = content.licenses.map(l=>`
+    <div class="license-card" data-reveal>
+      <div class="license-thumb" style="${l.image ? `background-image:url('${l.image}')` : ''}">${l.image ? '' : 'No image'}</div>
+      <div class="license-body">
+        <h3>${escapeHtml(l.label)}</h3>
+        ${l.note ? `<p>${escapeHtml(l.note)}</p>` : ''}
+      </div>
     </div>`).join('');
 }
 
@@ -810,7 +944,7 @@ function initReveal(container){
 }
 
 /* ---------------- Router ---------------- */
-const ROUTES = ['home','services','projects','about','contact','admin'];
+const ROUTES = ['home','services','projects','licenses','about','contact','admin'];
 function currentRoute(){
   const h = window.location.hash.replace('#/','').replace('#','');
   return ROUTES.includes(h) ? h : 'home';
@@ -897,8 +1031,15 @@ function renderAdminForms(){
   setVal('a_bgImage', h.bgImage);
   updateBgPreview();
 
-  setVal('a_services', content.services.map(s=>`${s.title} | ${s.description}`).join('\n'));
-  setVal('a_projects', content.projects.map(p=>`${p.name} | ${p.type} | ${p.location} | ${p.year}`).join('\n'));
+  const logoUrl = content.site && content.site.logoImage;
+  setVal('a_logoImage', logoUrl || '');
+  const logoPrev = document.getElementById('logoPreview');
+  if(logoUrl){ logoPrev.style.backgroundImage = `url("${logoUrl}")`; logoPrev.textContent = ''; }
+  else { logoPrev.style.backgroundImage = 'none'; logoPrev.textContent = 'No logo set — showing "ML Resources" text only'; }
+
+  renderServicesAdminList();
+  renderProjectsAdminList();
+  renderLicensesAdminList();
 
   setVal('a_stats', content.about.stats.map(s=>`${s.num} | ${s.label}`).join('\n'));
   setVal('a_paragraphs', content.about.paragraphs.join('\n'));
@@ -920,6 +1061,105 @@ function flash(id, text, ok=true){
   el.textContent = text;
   el.style.color = ok ? '#7FBE8C' : '#D3775A';
   setTimeout(()=>{ if(el.textContent===text) el.textContent=''; }, 3000);
+}
+function escAttr(str){
+  return escapeHtml(str).replace(/"/g,'&quot;');
+}
+
+/* ---------------- Admin: image upload ---------------- */
+function handleImageUpload(fileInput, hiddenSel, previewSel){
+  const file = fileInput.files && fileInput.files[0];
+  if(!file) return;
+  const scope = hiddenSel.startsWith('#') ? document : (fileInput.closest('.admin-list-item') || document);
+  const reader = new FileReader();
+  reader.onload = function(){
+    const dataUrl = reader.result;
+    const hidden = scope.querySelector(hiddenSel);
+    const preview = scope.querySelector(previewSel);
+    if(hidden) hidden.value = dataUrl;
+    if(preview){ preview.style.backgroundImage = `url("${dataUrl}")`; preview.textContent = ''; }
+  };
+  reader.readAsDataURL(file);
+}
+function removeListItem(btn){
+  btn.closest('.admin-list-item').remove();
+}
+
+/* ---------------- Admin: services list ---------------- */
+function serviceItemHtml(s, idx){
+  return `
+    <div class="admin-list-item" data-idx="${idx}">
+      <div class="admin-grid-2">
+        <div class="field"><label>Title</label><input class="svc-title" value="${escAttr(s.title||'')}"></div>
+        <div class="field"><label>Icon</label><select class="svc-icon" onchange="this.closest('.admin-list-item').querySelector('.icon-preview').innerHTML = iconSvg(this.value,'#C1552A')">${iconOptions(s.icon)}</select></div>
+      </div>
+      <div class="field" style="margin-top:10px;"><label>Description</label><textarea class="svc-desc">${escapeHtml(s.description||'')}</textarea></div>
+      <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <span class="icon-preview">${iconSvg(s.icon,'#C1552A')}</span>
+        <button type="button" class="btn btn-outline btn-small" onclick="removeListItem(this)">Remove</button>
+      </div>
+    </div>`;
+}
+function renderServicesAdminList(){
+  document.getElementById('servicesAdminList').innerHTML = content.services.map((s,i)=>serviceItemHtml(s,i)).join('');
+}
+function addServiceItem(){
+  document.getElementById('servicesAdminList').insertAdjacentHTML('beforeend', serviceItemHtml({title:'', description:'', icon:'general'}, 0));
+}
+
+/* ---------------- Admin: projects list ---------------- */
+function projectItemHtml(p){
+  return `
+    <div class="admin-list-item">
+      <div class="admin-grid-2">
+        <div class="field"><label>Project name</label><input class="prj-name" value="${escAttr(p.name||'')}"></div>
+        <div class="field"><label>Type</label><input class="prj-type" value="${escAttr(p.type||'')}"></div>
+      </div>
+      <div class="admin-grid-2" style="margin-top:10px;">
+        <div class="field"><label>Location</label><input class="prj-loc" value="${escAttr(p.location||'')}"></div>
+        <div class="field"><label>Year</label><input class="prj-year" value="${escAttr(p.year||'')}"></div>
+      </div>
+      <div class="field" style="margin-top:10px;"><label>Description (optional)</label><textarea class="prj-desc">${escapeHtml(p.description||'')}</textarea></div>
+      <div class="field" style="margin-top:10px;">
+        <label>Photo</label>
+        <input type="file" accept="image/*" onchange="handleImageUpload(this, '.prj-image-data', '.prj-preview')">
+        <input type="hidden" class="prj-image-data" value="${escAttr(p.image||'')}">
+        <div class="img-upload-preview prj-preview" style="${p.image ? `background-image:url('${p.image}')` : ''}">${p.image ? '' : 'No photo set'}</div>
+      </div>
+      <div style="margin-top:10px; text-align:right;">
+        <button type="button" class="btn btn-outline btn-small" onclick="removeListItem(this)">Remove</button>
+      </div>
+    </div>`;
+}
+function renderProjectsAdminList(){
+  document.getElementById('projectsAdminList').innerHTML = content.projects.map(p=>projectItemHtml(p)).join('');
+}
+function addProjectItem(){
+  document.getElementById('projectsAdminList').insertAdjacentHTML('beforeend', projectItemHtml({name:'', type:'', location:'', year:'', description:'', image:''}));
+}
+
+/* ---------------- Admin: licenses list ---------------- */
+function licenseItemHtml(l){
+  return `
+    <div class="admin-list-item">
+      <div class="field"><label>Label</label><input class="lic-label" value="${escAttr(l.label||'')}" placeholder="e.g. General Contractor License"></div>
+      <div class="field" style="margin-top:10px;"><label>Note (optional)</label><input class="lic-note" value="${escAttr(l.note||'')}" placeholder="e.g. License # or expiration date"></div>
+      <div class="field" style="margin-top:10px;">
+        <label>Image</label>
+        <input type="file" accept="image/*" onchange="handleImageUpload(this, '.lic-image-data', '.lic-preview')">
+        <input type="hidden" class="lic-image-data" value="${escAttr(l.image||'')}">
+        <div class="img-upload-preview lic-preview" style="${l.image ? `background-image:url('${l.image}')` : ''}">${l.image ? '' : 'No image set'}</div>
+      </div>
+      <div style="margin-top:10px; text-align:right;">
+        <button type="button" class="btn btn-outline btn-small" onclick="removeListItem(this)">Remove</button>
+      </div>
+    </div>`;
+}
+function renderLicensesAdminList(){
+  document.getElementById('licensesAdminList').innerHTML = content.licenses.map(l=>licenseItemHtml(l)).join('');
+}
+function addLicenseItem(){
+  document.getElementById('licensesAdminList').insertAdjacentHTML('beforeend', licenseItemHtml({label:'', note:'', image:''}));
 }
 
 /* ---------------- Admin: save handlers ---------------- */
@@ -961,25 +1201,57 @@ function clearBg(){
 }
 
 async function saveServices(){
-  const lines = document.getElementById('a_services').value.split('\n').map(l=>l.trim()).filter(Boolean);
-  content.services = lines.map(l=>{
-    const [title, ...rest] = l.split('|');
-    return {title:(title||'').trim(), description:rest.join('|').trim()};
-  });
+  const items = document.querySelectorAll('#servicesAdminList .admin-list-item');
+  content.services = Array.from(items).map(item=>({
+    title: item.querySelector('.svc-title').value.trim(),
+    description: item.querySelector('.svc-desc').value.trim(),
+    icon: item.querySelector('.svc-icon').value
+  })).filter(s=>s.title);
   const ok = await persistContent();
   renderServices(); renderHome();
   flash('msg_services', ok ? 'Saved.' : 'Save failed — try again.', ok);
 }
 
 async function saveProjects(){
-  const lines = document.getElementById('a_projects').value.split('\n').map(l=>l.trim()).filter(Boolean);
-  content.projects = lines.map(l=>{
-    const parts = l.split('|').map(p=>p.trim());
-    return {name:parts[0]||'', type:parts[1]||'', location:parts[2]||'', year:parts[3]||''};
-  });
+  const items = document.querySelectorAll('#projectsAdminList .admin-list-item');
+  content.projects = Array.from(items).map(item=>({
+    name: item.querySelector('.prj-name').value.trim(),
+    type: item.querySelector('.prj-type').value.trim(),
+    location: item.querySelector('.prj-loc').value.trim(),
+    year: item.querySelector('.prj-year').value.trim(),
+    description: item.querySelector('.prj-desc').value.trim(),
+    image: item.querySelector('.prj-image-data').value
+  })).filter(p=>p.name);
   const ok = await persistContent();
   renderProjects();
   flash('msg_projects', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+async function saveLicenses(){
+  const items = document.querySelectorAll('#licensesAdminList .admin-list-item');
+  content.licenses = Array.from(items).map(item=>({
+    label: item.querySelector('.lic-label').value.trim(),
+    note: item.querySelector('.lic-note').value.trim(),
+    image: item.querySelector('.lic-image-data').value
+  })).filter(l=>l.label || l.image);
+  const ok = await persistContent();
+  renderLicenses();
+  flash('msg_licenses', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+
+async function saveLogo(){
+  content.site = content.site || {};
+  content.site.logoImage = document.getElementById('a_logoImage').value.trim();
+  const ok = await persistContent();
+  renderLogo();
+  flash('msg_logo', ok ? 'Saved.' : 'Save failed — try again.', ok);
+}
+function clearLogo(){
+  document.getElementById('a_logoImage').value = '';
+  const prev = document.getElementById('logoPreview');
+  prev.style.backgroundImage = 'none';
+  prev.textContent = 'No logo set — showing "ML Resources" text only';
+  saveLogo();
 }
 
 async function saveAbout(){
