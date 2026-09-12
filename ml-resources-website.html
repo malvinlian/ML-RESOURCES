@@ -67,8 +67,10 @@
     padding:18px 32px; max-width:var(--max-w); margin:0 auto;
   }
   .logo-wrap{display:flex; align-items:center; gap:10px;}
-  .logo-img{height:30px; width:auto; display:none;}
-  .logo{font-family:'Archivo Expanded', sans-serif; font-weight:700; font-size:19px; letter-spacing:.01em;}
+  .logo-img{height:30px; width:auto; display:none; transition:transform .25s ease;}
+  .logo-img:hover{transform:scale(1.05);}
+  .logo{font-family:'Archivo Expanded', sans-serif; font-weight:700; font-size:19px; letter-spacing:.01em; transition:transform .25s ease;}
+  .logo:hover{transform:scale(1.03);}
   .logo span{color:var(--rust);}
   nav ul{display:flex; gap:8px; list-style:none;}
   nav a{
@@ -111,6 +113,7 @@
     font-family:inherit; background:none; color:var(--text);
     transition:background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease;
   }
+  .btn:hover{transform:translateY(-2px);}
   .btn:active{transform:scale(.98);}
   .btn-solid{background:var(--rust); color:#fff; border-color:var(--rust);}
   .btn-solid:hover{background:var(--rust-hover); border-color:var(--rust-hover);}
@@ -141,7 +144,14 @@
   .hero-inner .tagline{margin-top:22px; max-width:50ch; color:#D4D8D6; font-size:18px;}
   .meta-line{margin-top:26px; display:flex; gap:22px; flex-wrap:wrap; font-size:14px; color:var(--steel); font-weight:600;}
   .meta-line span{position:relative; padding-left:14px;}
-  .meta-line span::before{content:''; position:absolute; left:0; top:7px; width:6px; height:6px; background:var(--rust);}
+  .meta-line span::before{
+    content:''; position:absolute; left:0; top:7px; width:6px; height:6px; background:var(--rust);
+    animation:dotPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes dotPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(193,85,42,.45);}
+    50%{box-shadow:0 0 0 4px rgba(193,85,42,0);}
+  }
   .cta-row{margin-top:36px; display:flex; gap:16px; flex-wrap:wrap;}
 
   .home-panels{background:var(--bg-alt); border-top:1px solid var(--border);}
@@ -152,7 +162,13 @@
   .panel{border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:34px 28px;
     transition:background .25s ease;}
   .panel:hover{background:var(--surface);}
-  .panel svg{width:32px; height:32px; margin-bottom:16px;}
+  .panel svg{
+    width:32px; height:32px; margin-bottom:16px;
+    transform:scale(.4) rotate(-15deg); opacity:0;
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+  }
+  .panel.in-view svg{transform:scale(1) rotate(0deg); opacity:1;}
+  .panel:hover svg{transform:scale(1.15) rotate(-6deg);}
   .panel h3{font-size:18px; margin-bottom:8px;}
   .panel p{color:var(--text-muted); font-size:15px;}
 
@@ -172,7 +188,13 @@
     padding:32px 28px; background:var(--bg); transition:background .25s ease, transform .25s ease;
   }
   .service:hover{background:var(--surface); transform:translateY(-2px);}
-  .service svg{width:34px; height:34px; margin-bottom:18px;}
+  .service svg{
+    width:34px; height:34px; margin-bottom:18px;
+    transform:scale(.4) rotate(-15deg); opacity:0;
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+  }
+  .service.in-view svg{transform:scale(1) rotate(0deg); opacity:1;}
+  .service:hover svg{transform:scale(1.15) rotate(-6deg);}
   .service h3{font-size:19px; margin-bottom:10px;}
   .service p{color:var(--text-muted); font-size:15px;}
 
@@ -186,8 +208,15 @@
   .project-thumb{
     aspect-ratio:16/10; background-size:cover; background-position:center; background-color:var(--surface);
     display:flex; align-items:center; justify-content:center;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);
   }
-  .project-thumb svg{width:40px; height:40px;}
+  .project-card:hover .project-thumb{transform:scale(1.08);}
+  .project-thumb svg{
+    width:40px; height:40px;
+    transform:scale(.4) rotate(-15deg); opacity:0;
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+  }
+  .project-card.in-view .project-thumb svg{transform:scale(1) rotate(0deg); opacity:1;}
   .project-body{padding:22px 24px;}
   .project-body .p-name{font-family:'Archivo', sans-serif; font-weight:700; font-size:19px;}
   .project-body .p-type{color:var(--text-muted); font-size:14px; margin-top:6px;}
@@ -197,17 +226,44 @@
     border-top:1px solid var(--border); padding-top:12px;
   }
   .empty-note{color:var(--text-muted); font-size:15px;}
+  .clickable{cursor:zoom-in;}
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:200; display:none;
+    align-items:center; justify-content:center; padding:48px;
+    background:rgba(10,12,13,.92); cursor:zoom-out;
+    animation:lightboxFade .2s ease;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{
+    max-width:90vw; max-height:85vh; object-fit:contain;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+    animation:lightboxZoom .3s cubic-bezier(.2,.7,.2,1);
+  }
+  .lightbox-close{
+    position:absolute; top:22px; right:28px; width:40px; height:40px;
+    background:none; border:1px solid var(--border); color:var(--text);
+    font-size:26px; line-height:1; cursor:pointer; font-family:inherit;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .lightbox-close:hover{background:rgba(255,255,255,.08); transform:rotate(90deg);}
+  @keyframes lightboxFade{from{opacity:0;} to{opacity:1;}}
+  @keyframes lightboxZoom{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
 
   /* ---------- LICENSES ---------- */
   .license-grid{
     display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--border); border:1px solid var(--border);
   }
-  .license-card{background:var(--bg);}
+  .license-card{background:var(--bg); overflow:hidden; transition:transform .25s ease;}
+  .license-card:hover{transform:translateY(-3px);}
   .license-thumb{
     aspect-ratio:4/3; background-size:cover; background-position:center; background-color:var(--surface);
     display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);
   }
+  .license-card:hover .license-thumb{transform:scale(1.08);}
   .license-body{padding:18px 20px;}
   .license-body h3{font-size:16px; margin-bottom:6px;}
   .license-body p{font-size:13px; color:var(--text-muted);}
@@ -353,14 +409,12 @@
   <section class="page hero-page" id="page-home">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-inner">
-      <div data-reveal>
-        <h1 id="heroTitle"></h1>
-        <p class="tagline" id="heroTagline"></p>
-        <div class="meta-line" id="heroMeta"></div>
-        <div class="cta-row">
-          <a href="#/contact" class="btn btn-solid" id="heroCtaPrimary"></a>
-          <a href="#/projects" class="btn btn-outline" id="heroCtaSecondary"></a>
-        </div>
+      <h1 id="heroTitle" data-reveal></h1>
+      <p class="tagline" id="heroTagline" data-reveal></p>
+      <div class="meta-line" id="heroMeta" data-reveal></div>
+      <div class="cta-row" data-reveal>
+        <a href="#/contact" class="btn btn-solid" id="heroCtaPrimary"></a>
+        <a href="#/projects" class="btn btn-outline" id="heroCtaSecondary"></a>
       </div>
     </div>
 
@@ -415,33 +469,33 @@
   <!-- ABOUT -->
   <section class="page" id="page-about">
     <div class="section wrap about-grid">
-      <div class="about-figures" id="aboutFigures" data-reveal></div>
-      <div class="about-copy" id="aboutCopy" data-reveal></div>
+      <div class="about-figures" id="aboutFigures"></div>
+      <div class="about-copy" id="aboutCopy"></div>
     </div>
   </section>
 
   <!-- CONTACT -->
   <section class="page" id="page-contact">
     <div class="section wrap contact-grid">
-      <div class="contact-info" data-reveal>
-        <div class="section-head" style="border:none; padding-bottom:0; margin-bottom:24px; display:block;">
+      <div class="contact-info">
+        <div class="section-head" style="border:none; padding-bottom:0; margin-bottom:24px; display:block;" data-reveal>
           <h2>Get a quote</h2>
         </div>
-        <dl id="contactDl"></dl>
-        <div class="service-area" id="contactArea"></div>
+        <dl id="contactDl" data-reveal></dl>
+        <div class="service-area" id="contactArea" data-reveal></div>
       </div>
       <div data-reveal>
         <form id="contactForm" name="contact" method="POST" data-netlify="true" onsubmit="handleFormSubmit(event)">
           <input type="hidden" name="form-name" value="contact">
-          <div class="field">
+          <div class="field" data-reveal>
             <label for="cName">Name</label>
             <input id="cName" name="name" type="text" required>
           </div>
-          <div class="field">
+          <div class="field" data-reveal>
             <label for="cContact">Phone or email</label>
             <input id="cContact" name="contact" type="text" required>
           </div>
-          <div class="field">
+          <div class="field" data-reveal>
             <label for="cType">Project type</label>
             <select id="cType" name="project-type">
               <option>General contracting</option>
@@ -452,7 +506,7 @@
               <option>Other</option>
             </select>
           </div>
-          <div class="field">
+          <div class="field" data-reveal>
             <label for="cDetails">Project details</label>
             <textarea id="cDetails" name="details" required></textarea>
           </div>
@@ -678,6 +732,11 @@
   </div>
 </footer>
 
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="Full size view">
+</div>
+
 <script>
 /* ---------------- Icons ---------------- */
 const ICON_LIB = {
@@ -879,6 +938,7 @@ function renderEverything(){
   renderAdminForms();
   const activeEl = document.querySelector('.page.active');
   if(activeEl) initReveal(activeEl);
+  if(activeEl && activeEl.id === 'page-about') animateStatCounters(activeEl);
 }
 
 function shade(hex, percent){
@@ -974,7 +1034,7 @@ function renderProjects(){
   }
   wrap.innerHTML = content.projects.map((p,i)=>`
     <div class="project-card" data-reveal>
-      <div class="project-thumb" style="${p.image ? `background-image:url('${p.image}')` : ''}">
+      <div class="project-thumb${p.image ? ' clickable' : ''}" style="${p.image ? `background-image:url('${p.image}')` : ''}" ${p.image ? `onclick="openLightbox('${p.image}')"` : ''}>
         ${p.image ? '' : iconSvg(ICON_ORDER[i % ICON_ORDER.length], '#7FA3B2')}
       </div>
       <div class="project-body">
@@ -994,7 +1054,7 @@ function renderLicenses(){
   }
   grid.innerHTML = content.licenses.map(l=>`
     <div class="license-card" data-reveal>
-      <div class="license-thumb" style="${l.image ? `background-image:url('${l.image}')` : ''}">${l.image ? '' : 'No image'}</div>
+      <div class="license-thumb${l.image ? ' clickable' : ''}" style="${l.image ? `background-image:url('${l.image}')` : ''}" ${l.image ? `onclick="openLightbox('${l.image}')"` : ''}>${l.image ? '' : 'No image'}</div>
       <div class="license-body">
         <h3>${escapeHtml(l.label)}</h3>
         ${l.note ? `<p>${escapeHtml(l.note)}</p>` : ''}
@@ -1004,9 +1064,9 @@ function renderLicenses(){
 
 function renderAbout(){
   document.getElementById('aboutFigures').innerHTML = content.about.stats.map(s=>`
-    <div class="figure"><div class="num">${escapeHtml(s.num)}</div><div class="label">${escapeHtml(s.label)}</div></div>
+    <div class="figure" data-reveal><div class="num">${escapeHtml(s.num)}</div><div class="label">${escapeHtml(s.label)}</div></div>
   `).join('');
-  document.getElementById('aboutCopy').innerHTML = content.about.paragraphs.map(p=>`<p>${escapeHtml(p)}</p>`).join('');
+  document.getElementById('aboutCopy').innerHTML = content.about.paragraphs.map(p=>`<p data-reveal>${escapeHtml(p)}</p>`).join('');
 }
 
 function renderContact(){
@@ -1051,6 +1111,45 @@ function initReveal(container){
   }
 }
 
+/* ---------------- Lightbox ---------------- */
+function openLightbox(url){
+  if(!url) return;
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(e){
+  if(e) e.stopPropagation();
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape') closeLightbox();
+});
+
+/* ---------------- Stat counter animation ---------------- */
+function animateStatCounters(container){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduceMotion) return;
+  const nums = container.querySelectorAll('.figure .num');
+  nums.forEach(el=>{
+    const raw = el.textContent.trim();
+    const match = raw.match(/^(\d+)/);
+    if(!match) return;
+    const target = parseInt(match[1], 10);
+    const suffix = raw.slice(match[1].length);
+    const duration = 900;
+    const start = performance.now();
+    function step(now){
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if(p < 1) requestAnimationFrame(step);
+      else el.textContent = raw;
+    }
+    requestAnimationFrame(step);
+  });
+}
+
 /* ---------------- Router ---------------- */
 const ROUTES = ['home','services','projects','licenses','about','contact','admin'];
 function currentRoute(){
@@ -1065,6 +1164,7 @@ function showPage(route){
   updateNavActive(route);
   document.querySelector('nav ul').classList.remove('open');
   initReveal(el);
+  if(route === 'about') animateStatCounters(el);
 }
 window.addEventListener('hashchange', ()=> showPage(currentRoute()));
 
