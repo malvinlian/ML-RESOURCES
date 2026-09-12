@@ -203,14 +203,20 @@
     display:grid; grid-template-columns:repeat(2,1fr); gap:24px;
   }
   .project-card{
-    background:var(--surface); border:1px solid var(--border); border-radius:4px; overflow:hidden;
-    transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    background:var(--surface); border:none; border-radius:4px; overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease;
   }
-  .project-card:hover{transform:translateY(-3px); border-color:var(--steel-dim); box-shadow:0 12px 28px rgba(0,0,0,.28);}
+  .project-card:hover{transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.28);}
   .project-thumb{
+    position:relative;
     aspect-ratio:16/10; background-size:cover; background-position:center; background-color:var(--surface);
     display:flex; align-items:center; justify-content:center;
     transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .photo-count{
+    position:absolute; bottom:10px; right:10px;
+    background:rgba(20,24,27,.75); color:var(--text); font-size:11px; font-weight:600;
+    padding:4px 9px; border-radius:3px; pointer-events:none;
   }
   .project-card:hover .project-thumb{transform:scale(1.08);}
   .project-thumb svg{
@@ -250,6 +256,20 @@
     transition:background .2s ease, transform .2s ease;
   }
   .lightbox-close:hover{background:rgba(255,255,255,.08); transform:rotate(90deg);}
+  .lightbox-nav{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between;
+    padding:0 20px; pointer-events:none;
+  }
+  .lightbox-arrow{
+    pointer-events:auto; width:46px; height:46px; background:rgba(255,255,255,.06);
+    border:1px solid var(--border); color:var(--text); font-size:16px; cursor:pointer; font-family:inherit;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .lightbox-arrow:hover{background:rgba(255,255,255,.16); transform:scale(1.08);}
+  .lightbox-counter{
+    position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
+    color:var(--text); font-size:13px; background:rgba(0,0,0,.45); padding:6px 16px; border-radius:20px;
+  }
   @keyframes lightboxFade{from{opacity:0;} to{opacity:1;}}
   @keyframes lightboxZoom{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
 
@@ -258,18 +278,18 @@
     display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
   }
   .license-card{
-    background:var(--surface); border:1px solid var(--border); border-radius:4px; overflow:hidden;
-    transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    background:var(--surface); border:none; border-radius:4px; overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease;
   }
-  .license-card:hover{transform:translateY(-3px); border-color:var(--steel-dim); box-shadow:0 12px 28px rgba(0,0,0,.28);}
+  .license-card:hover{transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.28);}
   .license-thumb{
     aspect-ratio:4/3; background-size:contain; background-repeat:no-repeat; background-position:center;
-    background-color:var(--bg-alt); border-bottom:1px solid var(--border);
+    background-color:var(--bg-alt);
     display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;
     transition:transform .4s cubic-bezier(.2,.7,.2,1);
   }
   .license-card:hover .license-thumb{transform:scale(1.04);}
-  .license-body{padding:18px 20px;}
+  .license-body{padding:18px 20px; text-align:center;}
   .license-body h3{font-size:16px; margin-bottom:6px;}
   .license-body p{font-size:13px; color:var(--text-muted);}
 
@@ -357,6 +377,21 @@
     background-size:cover; background-position:center; background-color:var(--surface);
     display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;
   }
+  .photo-strip{
+    margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .strip-empty{color:var(--text-muted); font-size:13px;}
+  .strip-loading{color:var(--steel); font-size:13px; align-self:center;}
+  .strip-thumb{
+    position:relative; width:84px; height:84px; border:1px solid var(--border);
+    background-size:cover; background-position:center; background-color:var(--surface);
+  }
+  .strip-remove{
+    position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%;
+    background:var(--rust); color:#fff; border:none; font-size:14px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .strip-remove:hover{background:var(--rust-hover);}
   .icon-preview svg{width:26px; height:26px;}
   .field input[type="color"]{padding:4px; height:42px; cursor:pointer;}
   .field input[type="range"]{padding:0; accent-color:var(--rust);}
@@ -621,7 +656,7 @@
       <div class="admin-panel" id="tab-projects">
         <div class="admin-card">
           <h3>Project Portfolio</h3>
-          <p class="hint">Add a photo and details for each finished project. Photos are stored with the rest of your site content, so keep individual images reasonably small (under ~500KB each works well).</p>
+          <p class="hint">Add a photo and details for each finished project. Once deployed to Netlify, photos upload to their own image storage automatically; while previewing here in chat they're embedded directly, so keep files reasonably small for a smoother preview.</p>
           <div id="projectsAdminList"></div>
           <div style="margin-top:14px; display:flex; gap:10px;">
             <button class="btn btn-outline btn-small" onclick="addProjectItem()">Add project</button>
@@ -739,7 +774,12 @@
 
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <button class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>
+  <div class="lightbox-nav" id="lightboxNav" style="display:none;">
+    <button class="lightbox-arrow" onclick="galleryPrev(event)" aria-label="Previous photo">&#10094;</button>
+    <button class="lightbox-arrow" onclick="galleryNext(event)" aria-label="Next photo">&#10095;</button>
+  </div>
   <img id="lightboxImg" src="" alt="Full size view">
+  <div class="lightbox-counter" id="lightboxCounter" style="display:none;"></div>
 </div>
 
 <script>
@@ -790,10 +830,10 @@ const DEFAULT_CONTENT = {
     {title:"Project management", description:"Scheduling, subcontractor coordination, and budget tracking, handled by one direct contact.", icon:"pm"}
   ],
   projects:[
-    {name:"Maple Street Addition", type:"Second-story addition, 620 sq ft", location:"[Neighborhood]", year:"2025", description:"", image:""},
-    {name:"Birchwood Kitchen Remodel", type:"Full gut renovation", location:"[Neighborhood]", year:"2025", description:"", image:""},
-    {name:"Harbor Rd. Foundation Repair", type:"Structural repair & underpinning", location:"[Neighborhood]", year:"2024", description:"", image:""},
-    {name:"Pine Ave. Site Grading", type:"Site prep for new build", location:"[Neighborhood]", year:"2024", description:"", image:""}
+    {name:"Maple Street Addition", type:"Second-story addition, 620 sq ft", location:"[Neighborhood]", year:"2025", description:"", images:[]},
+    {name:"Birchwood Kitchen Remodel", type:"Full gut renovation", location:"[Neighborhood]", year:"2025", description:"", images:[]},
+    {name:"Harbor Rd. Foundation Repair", type:"Structural repair & underpinning", location:"[Neighborhood]", year:"2024", description:"", images:[]},
+    {name:"Pine Ave. Site Grading", type:"Site prep for new build", location:"[Neighborhood]", year:"2024", description:"", images:[]}
   ],
   licenses:[],
   site:{ logoImage:"" },
@@ -1031,16 +1071,24 @@ function renderServices(){
     </div>`).join('');
 }
 
+function projectImages(p){
+  return (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+}
+
 function renderProjects(){
   const wrap = document.getElementById('projectList');
   if(!content.projects || content.projects.length === 0){
     wrap.innerHTML = `<p class="empty-note">No projects added yet — add your first one from the admin page.</p>`;
     return;
   }
-  wrap.innerHTML = content.projects.map((p,i)=>`
+  wrap.innerHTML = content.projects.map((p,i)=>{
+    const imgs = projectImages(p);
+    const cover = imgs[0];
+    return `
     <div class="project-card" data-reveal>
-      <div class="project-thumb${p.image ? ' clickable' : ''}" style="${p.image ? `background-image:url('${p.image}')` : ''}" ${p.image ? `onclick="openLightbox('${p.image}')"` : ''}>
-        ${p.image ? '' : iconSvg(ICON_ORDER[i % ICON_ORDER.length], '#7FA3B2')}
+      <div class="project-thumb${cover ? ' clickable' : ''}" style="${cover ? `background-image:url('${cover}')` : ''}" ${cover ? `onclick="openProjectGallery(${i})"` : ''}>
+        ${cover ? '' : iconSvg(ICON_ORDER[i % ICON_ORDER.length], '#7FA3B2')}
+        ${imgs.length > 1 ? `<span class="photo-count">${imgs.length} photos</span>` : ''}
       </div>
       <div class="project-body">
         <div class="p-name">${escapeHtml(p.name)}</div>
@@ -1048,7 +1096,8 @@ function renderProjects(){
         ${p.description ? `<div class="p-desc">${escapeHtml(p.description)}</div>` : ''}
         <div class="p-meta"><span>${escapeHtml(p.location)}</span><span>${escapeHtml(p.year)}</span></div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderLicenses(){
@@ -1117,18 +1166,59 @@ function initReveal(container){
 }
 
 /* ---------------- Lightbox ---------------- */
-function openLightbox(url){
-  if(!url) return;
-  document.getElementById('lightboxImg').src = url;
+let galleryImages = [];
+let galleryIndex = 0;
+
+function openGallery(images, index){
+  if(!images || !images.length) return;
+  galleryImages = images;
+  galleryIndex = Math.max(0, Math.min(index || 0, images.length - 1));
+  updateGalleryImage();
   document.getElementById('lightbox').classList.add('open');
+}
+function openProjectGallery(i){
+  const p = content.projects[i];
+  if(!p) return;
+  openGallery(projectImages(p), 0);
+}
+function openLightbox(url){
+  openGallery([url], 0);
+}
+function updateGalleryImage(){
+  document.getElementById('lightboxImg').src = galleryImages[galleryIndex] || '';
+  const counter = document.getElementById('lightboxCounter');
+  const nav = document.getElementById('lightboxNav');
+  if(galleryImages.length > 1){
+    counter.textContent = (galleryIndex + 1) + ' / ' + galleryImages.length;
+    counter.style.display = 'block';
+    nav.style.display = 'flex';
+  } else {
+    counter.style.display = 'none';
+    nav.style.display = 'none';
+  }
+}
+function galleryPrev(e){
+  if(e) e.stopPropagation();
+  galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+  updateGalleryImage();
+}
+function galleryNext(e){
+  if(e) e.stopPropagation();
+  galleryIndex = (galleryIndex + 1) % galleryImages.length;
+  updateGalleryImage();
 }
 function closeLightbox(e){
   if(e) e.stopPropagation();
   document.getElementById('lightbox').classList.remove('open');
   document.getElementById('lightboxImg').src = '';
+  galleryImages = [];
 }
 document.addEventListener('keydown', (e)=>{
+  const lb = document.getElementById('lightbox');
+  if(!lb.classList.contains('open')) return;
   if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowLeft') galleryPrev();
+  else if(e.key === 'ArrowRight') galleryNext();
 });
 
 /* ---------------- Stat counter animation ---------------- */
@@ -1287,19 +1377,78 @@ function escAttr(str){
 }
 
 /* ---------------- Admin: image upload ---------------- */
+async function uploadImage(dataUrl){
+  // In the Claude artifact preview there's no real backend, so embed the
+  // image directly (same as before). Once deployed to Netlify, upload it
+  // to the images function instead so the content JSON stays small.
+  if(window.storage) return dataUrl;
+  try{
+    const res = await fetch('/.netlify/functions/images', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ dataUrl })
+    });
+    if(res.ok){
+      const data = await res.json();
+      if(data && data.url) return data.url;
+    }
+  }catch(e){}
+  return dataUrl; // fallback: embed directly if the function isn't reachable
+}
+
 function handleImageUpload(fileInput, hiddenSel, previewSel){
   const file = fileInput.files && fileInput.files[0];
   if(!file) return;
   const scope = hiddenSel.startsWith('#') ? document : (fileInput.closest('.admin-list-item') || document);
+  const hidden = scope.querySelector(hiddenSel);
+  const preview = scope.querySelector(previewSel);
+  if(preview){ preview.style.backgroundImage = 'none'; preview.textContent = 'Uploading…'; }
   const reader = new FileReader();
-  reader.onload = function(){
+  reader.onload = async function(){
     const dataUrl = reader.result;
-    const hidden = scope.querySelector(hiddenSel);
-    const preview = scope.querySelector(previewSel);
-    if(hidden) hidden.value = dataUrl;
-    if(preview){ preview.style.backgroundImage = `url("${dataUrl}")`; preview.textContent = ''; }
+    const finalUrl = await uploadImage(dataUrl);
+    if(hidden) hidden.value = finalUrl;
+    if(preview){ preview.style.backgroundImage = `url("${finalUrl}")`; preview.textContent = ''; }
   };
   reader.readAsDataURL(file);
+}
+function readFileAsDataUrl(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function handleMultiImageUpload(fileInput){
+  const files = Array.from(fileInput.files || []);
+  if(!files.length) return;
+  const item = fileInput.closest('.admin-list-item');
+  const hidden = item.querySelector('.prj-images-data');
+  const strip = item.querySelector('.photo-strip');
+  let arr = [];
+  try{ arr = JSON.parse(hidden.value || '[]'); }catch(e){ arr = []; }
+  strip.innerHTML = `<span class="strip-loading">Uploading ${files.length} photo(s)…</span>`;
+  for(const file of files){
+    const dataUrl = await readFileAsDataUrl(file);
+    const url = await uploadImage(dataUrl);
+    arr.push(url);
+  }
+  hidden.value = JSON.stringify(arr);
+  strip.innerHTML = photoStripHtml(arr);
+  fileInput.value = '';
+}
+function removeStripImage(btn){
+  const thumb = btn.closest('.strip-thumb');
+  const strip = thumb.parentElement;
+  const item = strip.closest('.admin-list-item');
+  const hidden = item.querySelector('.prj-images-data');
+  let arr = [];
+  try{ arr = JSON.parse(hidden.value || '[]'); }catch(e){ arr = []; }
+  const idx = Array.from(strip.children).indexOf(thumb);
+  if(idx > -1) arr.splice(idx, 1);
+  hidden.value = JSON.stringify(arr);
+  strip.innerHTML = photoStripHtml(arr);
 }
 function removeListItem(btn){
   btn.closest('.admin-list-item').remove();
@@ -1329,6 +1478,7 @@ function addServiceItem(){
 
 /* ---------------- Admin: projects list ---------------- */
 function projectItemHtml(p){
+  const imgs = projectImages(p);
   return `
     <div class="admin-list-item">
       <div class="admin-grid-2">
@@ -1341,21 +1491,28 @@ function projectItemHtml(p){
       </div>
       <div class="field" style="margin-top:10px;"><label>Description (optional)</label><textarea class="prj-desc">${escapeHtml(p.description||'')}</textarea></div>
       <div class="field" style="margin-top:10px;">
-        <label>Photo</label>
-        <input type="file" accept="image/*" onchange="handleImageUpload(this, '.prj-image-data', '.prj-preview')">
-        <input type="hidden" class="prj-image-data" value="${escAttr(p.image||'')}">
-        <div class="img-upload-preview prj-preview" style="${p.image ? `background-image:url('${p.image}')` : ''}">${p.image ? '' : 'No photo set'}</div>
+        <label>Photos</label>
+        <input type="file" accept="image/*" multiple onchange="handleMultiImageUpload(this)">
+        <input type="hidden" class="prj-images-data" value="${escAttr(JSON.stringify(imgs))}">
+        <div class="photo-strip">${photoStripHtml(imgs)}</div>
       </div>
       <div style="margin-top:10px; text-align:right;">
         <button type="button" class="btn btn-outline btn-small" onclick="removeListItem(this)">Remove</button>
       </div>
     </div>`;
 }
+function photoStripHtml(imgs){
+  if(!imgs.length) return `<span class="strip-empty">No photos yet</span>`;
+  return imgs.map(url=>`
+    <div class="strip-thumb" style="background-image:url('${url}')">
+      <button type="button" class="strip-remove" onclick="removeStripImage(this)">&times;</button>
+    </div>`).join('');
+}
 function renderProjectsAdminList(){
   document.getElementById('projectsAdminList').innerHTML = content.projects.map(p=>projectItemHtml(p)).join('');
 }
 function addProjectItem(){
-  document.getElementById('projectsAdminList').insertAdjacentHTML('beforeend', projectItemHtml({name:'', type:'', location:'', year:'', description:'', image:''}));
+  document.getElementById('projectsAdminList').insertAdjacentHTML('beforeend', projectItemHtml({name:'', type:'', location:'', year:'', description:'', images:[]}));
 }
 
 /* ---------------- Admin: licenses list ---------------- */
@@ -1498,14 +1655,18 @@ async function saveServices(){
 
 async function saveProjects(){
   const items = document.querySelectorAll('#projectsAdminList .admin-list-item');
-  content.projects = Array.from(items).map(item=>({
-    name: item.querySelector('.prj-name').value.trim(),
-    type: item.querySelector('.prj-type').value.trim(),
-    location: item.querySelector('.prj-loc').value.trim(),
-    year: item.querySelector('.prj-year').value.trim(),
-    description: item.querySelector('.prj-desc').value.trim(),
-    image: item.querySelector('.prj-image-data').value
-  })).filter(p=>p.name);
+  content.projects = Array.from(items).map(item=>{
+    let images = [];
+    try{ images = JSON.parse(item.querySelector('.prj-images-data').value || '[]'); }catch(e){ images = []; }
+    return {
+      name: item.querySelector('.prj-name').value.trim(),
+      type: item.querySelector('.prj-type').value.trim(),
+      location: item.querySelector('.prj-loc').value.trim(),
+      year: item.querySelector('.prj-year').value.trim(),
+      description: item.querySelector('.prj-desc').value.trim(),
+      images: images
+    };
+  }).filter(p=>p.name);
   const ok = await persistContent();
   renderProjects();
   flash('msg_projects', ok ? 'Saved.' : 'Save failed — try again.', ok);

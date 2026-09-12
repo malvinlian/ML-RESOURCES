@@ -37,6 +37,19 @@ and deploy the function automatically on every push.
 No extra database setup is needed — Netlify Blobs works out of the
 box once the function is deployed.
 
+## Image storage
+
+Uploaded photos (project photos, license scans, the logo) are stored via
+a second Netlify Function (`netlify/functions/images.js`) backed by its
+own Netlify Blobs store — separate from the site's text content. This
+keeps the content data small and avoids duplicating images into every
+save. No extra setup is needed; it deploys automatically alongside the
+content function whenever Functions are included (see Option B below).
+
+If you deploy as a static-only site (Option A) without Functions,
+uploaded images fall back to being embedded directly in the content —
+which still works, just makes saves larger.
+
 ## After deploying
 
 - **Admin panel:** click the small "." at the bottom right of the
