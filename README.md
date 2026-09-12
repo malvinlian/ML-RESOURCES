@@ -50,6 +50,26 @@ If you deploy as a static-only site (Option A) without Functions,
 uploaded images fall back to being embedded directly in the content —
 which still works, just makes saves larger.
 
+## Environment variables
+
+One optional variable, `ADMIN_DEFAULT_PASSCODE`, is supported — see
+`.env.example`. Set it so the site never goes live with the public
+default passcode (`admin123`):
+
+- **In Netlify:** Site configuration -> Environment variables -> Add a
+  variable -> name it `ADMIN_DEFAULT_PASSCODE`, value = whatever you
+  want the initial admin passcode to be. Redeploy for it to take
+  effect.
+- **Locally with `netlify dev`:** copy `.env.example` to `.env` and
+  set the value there.
+
+This only sets the *starting* passcode — once you log in and change
+it from Admin -> Account, the saved passcode takes over and the
+environment variable is no longer used.
+
+No other environment variables are needed. Netlify Blobs and Netlify
+Forms both work automatically without any configuration.
+
 ## After deploying
 
 - **Admin panel:** click the small "." at the bottom right of the
