@@ -40,7 +40,7 @@ box once the function is deployed.
 ## Image storage
 
 Uploaded photos (project photos, license scans, the logo) are stored via
-a second Netlify Function (`netlify/functions/images.js`) backed by its
+a second Netlify Function (`netlify/functions/images.mjs`) backed by its
 own Netlify Blobs store — separate from the site's text content. This
 keeps the content data small and avoids duplicating images into every
 save. No extra setup is needed; it deploys automatically alongside the
